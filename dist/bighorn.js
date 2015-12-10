@@ -342,9 +342,9 @@
 
 	    var name = properties.name || label;
 	    self.ahoy.track(name, properties);
-	    console.log("SUCCESS Bighorn.track ahoy", category, action, label, value);
+	    console.log("SUCCESS Bighorn.track ahoy", name, properties);
 	  } catch (e) {
-	    console.log("ERROR Bighorn.track ahoy", category, action, label, value);
+	    console.log("ERROR Bighorn.track ahoy", name, properties);
 	  }
 	};
 
