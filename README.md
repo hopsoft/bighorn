@@ -27,10 +27,11 @@ cd bighorn
 npm install
 ```
 
-### Build the `bighorn.js` script
+### Build the `bighorn.js` scripts
 
 ```sh
 ./node_modules/webpack/bin/webpack.js
+UGLIFY=true ./node_modules/webpack/bin/webpack.js
 ```
 
 ### Test in a browser
@@ -46,5 +47,6 @@ open http://localhost:8080/test
 ```javascript
 // in the browser console
 Bighorn.track("foo", "bar", "baz", 1);
+Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 ```
 

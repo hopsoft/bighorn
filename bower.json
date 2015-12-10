@@ -1,16 +1,14 @@
 {
   "name": "bighorn",
   "description": "A standardized interface for event tracking",
-  "main": "dist/bighorn.js",
+  "main": "dist/bighorn.min.js",
   "authors": [
     "Nathan Hopkins"
   ],
   "license": "MIT",
   "homepage": "https://github.com/hopsoft/bighorn",
   "moduleType": [
-    "amd",
-    "globals",
-    "node"
+    "globals"
   ],
   "ignore": [
     "**/.*",

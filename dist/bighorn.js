@@ -44,7 +44,8 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = global["Bighorn"] = __webpack_require__(1);
+	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["Bighorn"] = __webpack_require__(1);
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
 /* 1 */
@@ -158,6 +159,10 @@
 	var util = __webpack_require__(2);
 	var enumerable = __webpack_require__(5);
 
+	var keyValueDelim = ":";
+	var pairDelim = "; ";
+	var reservedPattern = new RegExp(keyValueDelim + "|" + pairDelim, "g");
+
 	/**
 	 * Converts a value into a KVN (Key Value Notation) string value
 	 * KVN stores key/value pairs as a string... think of it as a subset of JSON
@@ -178,15 +183,12 @@
 	    return String(value);
 	  }
 
-	  var keyValueDelim = ":";
-	  var pairDelim = "; ";
-
 	  var keys = enumerable.reduce(value, function (key, _, memo) {
 	    memo.push(key);
 	  }, []).sort();
 
 	  var flattened = enumerable.map(keys, function (key) {
-	    return String(key) + keyValueDelim + String(value[key]);
+	    return String(key).replace(reservedPattern, "") + keyValueDelim + String(value[key]).replace(reservedPattern, "");
 	  });
 
 	  return flattened.join(pairDelim);
