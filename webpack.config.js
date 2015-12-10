@@ -13,7 +13,7 @@ if (uglify) {
 module.exports = {
   context: __dirname,
   entry: "./src/tracker",
-  target: "node",
+  target: "web",
   output: {
     path: path.join(__dirname, "dist"),
     filename: filename
