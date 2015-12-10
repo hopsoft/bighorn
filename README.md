@@ -1,6 +1,6 @@
 # Bighorn
 
-A standardized API/interface for event tracking.
+A standardized interface for event tracking.
 
 ### Supported Backends
 
@@ -30,13 +30,13 @@ npm install
 ### Build the `bighorn.js` script
 
 ```sh
-webpack
+./node_modules/webpack/bin/webpack.js
 ```
 
 ### Test in a browser
 
 ```sh
-http-server
+./node_modules/http-server/bin/http-server
 ```
 
 ```sh
@@ -44,6 +44,7 @@ open http://localhost:8080/test
 ```
 
 ```javascript
+// in the browser console
 Bighorn.track("foo", "bar", "baz", 1);
 ```
 
