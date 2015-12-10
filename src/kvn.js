@@ -1,6 +1,10 @@
 var util = require("./util");
 var enumerable = require("./enumerable");
 
+var keyValueDelim = ":";
+var pairDelim = "; ";
+var reservedPattern = new RegExp(keyValueDelim + "|" + pairDelim, "g");
+
 /**
  * Converts a value into a KVN (Key Value Notation) string value
  * KVN stores key/value pairs as a string... think of it as a subset of JSON
@@ -21,15 +25,12 @@ module.exports = function (value) {
     return String(value);
   }
 
-  var keyValueDelim = ":";
-  var pairDelim = "; ";
-
   var keys = enumerable.reduce(value, function (key, _, memo) {
     memo.push(key);
   }, []).sort();
 
   var flattened = enumerable.map(keys, function (key) {
-    return String(key) + keyValueDelim + String(value[key]);
+    return String(key).replace(reservedPattern, "") + keyValueDelim + String(value[key]).replace(reservedPattern, "");
   });
 
   return flattened.join(pairDelim);
