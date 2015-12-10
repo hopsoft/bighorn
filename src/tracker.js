@@ -21,7 +21,8 @@ var trackEventWithAhoy            = require("./trackers/ahoy");
  *   - Label    [String]            - Useful for categorizing events (e.g. nav buttons)
  *   - Value    [Number]            - Values must be non-negative. Useful to pass counts (e.g. 4 times)
  */
-module.exports.track = function (category, action, label, value) {
+
+function track (category, action, label, value) {
   try {
     if (!util.isNumber(value)) { value = null; }
     trackEventWithGoogleAnalytics(category, action, label, value);
@@ -30,5 +31,13 @@ module.exports.track = function (category, action, label, value) {
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);
   }
-};
+}
+
+if (util.isFunction(self.define) && self.define.amd) {
+  self.define("bighorn", [], function() {
+    return { track: track };
+  });
+}
+
+module.exports.track = track;
 
