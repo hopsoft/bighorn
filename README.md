@@ -11,9 +11,10 @@ A standardized interface for event tracking.
 ## Usage
 
 ```html
-<script type="text/javascript" src="bighorn.js"></script>
+<script type="text/javascript" src="/path/to/bighorn.min.js"></script>
 <script type="text/javascript">
-Bighorn.track("category", "action", "label", 1);
+Bighorn.track("foo", "bar", "baz", 1);
+Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 </script>
 ```
 
@@ -22,7 +23,7 @@ Bighorn.track("category", "action", "label", 1);
 ### Get started
 
 ```
-git clone ...
+git clone git@github.com:hopsoft/bighorn.git
 cd bighorn
 npm install
 ```
