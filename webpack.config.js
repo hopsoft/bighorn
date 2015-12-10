@@ -1,17 +1,27 @@
 var webpack = require("webpack");
 var path = require("path");
 
+var uglify = process.env.UGLIFY === "true";
+var plugins = [];
+var filename = "bighorn.js";
+
+if (uglify) {
+  filename = "bighorn.min.js";
+  plugins.push(new webpack.optimize.UglifyJsPlugin({minimize: true}));
+}
+
 module.exports = {
   context: __dirname,
-  entry: "./lib/tracker",
-  target: "web",
+  entry: "./src/tracker",
+  target: "node",
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "bighorn.js"
+    filename: filename
   },
+  plugins: plugins,
   module: {
     loaders: [
-      { test: require.resolve("./lib/tracker"), loader: "expose?Bighorn" }
+      { test: require.resolve("./src/tracker"), loader: "expose?Bighorn" }
     ]
   }
 };

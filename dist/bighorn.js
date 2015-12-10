@@ -44,34 +44,19 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["Bighorn"] = __webpack_require__(1);
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+	module.exports = global["Bighorn"] = __webpack_require__(1);
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var util = __webpack_require__(2);
-	var enumerable = __webpack_require__(3);
-	var kvn = __webpack_require__(4);
-	var trackEventWithGoogleAnalytics = __webpack_require__(5);
-	var trackEventWithPiwik = __webpack_require__(6);
-	var trackEventWithAhoy = __webpack_require__(7);
-
-	function isValidString (value) {
-	  if (typeof(value) !== "string") { return false; }
-	  if (value.length === 0) { return false; }
-	  return true;
-	}
-
-	function isValidNumber (value) {
-	  return typeof(value) === "number";
-	}
-
-
 	// TODO: consider moving the tracking calls to a web worker
 	//       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
+	var util                          = __webpack_require__(2);
+	var trackEventWithGoogleAnalytics = __webpack_require__(3);
+	var trackEventWithPiwik           = __webpack_require__(6);
+	var trackEventWithAhoy            = __webpack_require__(7);
 
 	/*
 	 * Universal method for tracking events.
@@ -90,24 +75,12 @@
 	 */
 	module.exports.track = function (category, action, label, value) {
 	  try {
-	    var args = [category, action, label];
-	    var stringArgs = enumerable.map(args, function (arg) {
-	      return String(util.isObject(arg) ? kvn(arg) : arg);
-	    });
-
-	    var stringCategory = stringArgs[0];
-	    var stringAction   = stringArgs[1];
-	    var stringLabel    = stringArgs[2];
-
-	    if (!isValidString(stringCategory)) { return; }
-	    if (!isValidString(stringAction)) { return; }
-	    if (!isValidNumber(value)) { value = null; }
-
-	    trackEventWithGoogleAnalytics(stringCategory, stringAction, stringLabel, value);
-	    trackEventWithPiwik(stringCategory, stringAction, stringLabel, value);
+	    if (!util.isNumber(value)) { value = null; }
+	    trackEventWithGoogleAnalytics(category, action, label, value);
+	    trackEventWithPiwik(category, action, label, value);
 	    trackEventWithAhoy(category, action, label, value);
 	  } catch (e) {
-	    console.log("error", "trackEvent", e);
+	    console.log("ERROR", "Bighorn.track", e);
 	  }
 	};
 
@@ -118,11 +91,25 @@
 /***/ function(module, exports) {
 
 	function isObject (value) {
-	  return typeof(value) === "object";
+	  return (typeof value === "object");
 	}
 
 	function isFunction (value) {
-	  return typeof(value) === "function";
+	  return (typeof value === "function");
+	}
+
+	function isNumber (value) {
+	  return (typeof value === "number");
+	}
+
+	function isString (value) {
+	  return (typeof value === "string");
+	}
+
+	function isValidString (value) {
+	  if (!isString(value)) { return false; }
+	  if (value.replace(/\s/g, "").length === 0) { return false; }
+	  return true;
 	}
 
 	function isArray (value) {
@@ -132,12 +119,83 @@
 	module.exports = {
 	  isObject: isObject,
 	  isFunction: isFunction,
+	  isString: isString,
+	  isValidString: isValidString,
+	  isNumber: isNumber,
 	  isArray: isArray
 	};
 
 
 /***/ },
 /* 3 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(2);
+	var kvn = __webpack_require__(4);
+
+	module.exports = function (category, action, label, value) {
+	  try {
+	    category = kvn(category);
+	    action   = kvn(action);
+	    label    = kvn(label);
+
+	    if (!util.isValidString(category)) { return; }
+	    if (!util.isValidString(action)) { return; }
+	    if (!util.isFunction(self.ga)) { return; }
+
+	    self.ga("send", "event", category, action, label, value);
+	    console.log("SUCCESS Bighorn.track ga", category, action, label, value);
+	  } catch (e) {
+	    console.log("ERROR Bighorn.track ga", category, action, label, value);
+	  }
+	};
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(2);
+	var enumerable = __webpack_require__(5);
+
+	/**
+	 * Converts a value into a KVN (Key Value Notation) string value
+	 * KVN stores key/value pairs as a string... think of it as a subset of JSON
+	 *
+	 * NOTE: Keys are sorted alphabetically
+	 *
+	 * Example:
+	 *   { a: true, b: 1, c: "example", d: "example with whitespace" }
+	 *
+	 *   // produces
+	 *
+	 *   "a:true; b:1; c:example; d:example with whitespace;"
+	 *
+	 * IMPORTANT: Colons & semicolons are prohibited from use in keys and values
+	 */
+	module.exports = function (value) {
+	  if (!util.isObject(value)) {
+	    return String(value);
+	  }
+
+	  var keyValueDelim = ":";
+	  var pairDelim = "; ";
+
+	  var keys = enumerable.reduce(value, function (key, _, memo) {
+	    memo.push(key);
+	  }, []).sort();
+
+	  var flattened = enumerable.map(keys, function (key) {
+	    return String(key) + keyValueDelim + String(value[key]);
+	  });
+
+	  return flattened.join(pairDelim);
+	};
+
+
+
+/***/ },
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
@@ -219,72 +277,26 @@
 
 
 /***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var enumerable = __webpack_require__(3);
-
-	/**
-	 * Converts a shallow object of key/value pairs into a single string value using "Key Value Notation" (KVN)
-	 *
-	 * NOTE: Keys are sorted alphabetically
-	 *
-	 * Example:
-	 *   { a: true, b: 1, c: "example", d: "example with whitespace" }
-	 *
-	 *   // produces
-	 *
-	 *   "a:true; b:1; c:example; d:example with whitespace;"
-	 *
-	 * IMPORTANT: Colons & semicolons are prohibited from use in keys and values
-	 */
-	module.exports = function (object) {
-	  var keyValueDelim = ":";
-	  var pairDelim = "; ";
-
-	  var keys = enumerable.reduce(object, function (key, _, memo) {
-	    memo.push(key);
-	  }, []).sort();
-
-	  var flattened = enumerable.map(keys, function (key) {
-	    return String(key) + keyValueDelim + String(object[key]);
-	  });
-
-	  return flattened.join(pairDelim);
-	};
-
-
-
-/***/ },
-/* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var util = __webpack_require__(2);
-
-	module.exports = function (category, action, label, value) {
-	  try {
-	    if (!util.isFunction(ga)) { return; }
-	    ga("send", "event", category, action, label, value);
-	    console.log("GA EVENT ->", "CATEGORY", category, "ACTION", action, "LABEL", label, "VALUE", value);
-	  } catch (e) {
-	    console.log("error", "trackEventWithGoogleAnalytics", e);
-	  }
-	};
-
-
-/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
+	var kvn = __webpack_require__(4);
 
 	module.exports = function (category, action, label, value) {
 	  try {
-	    if (!util.isObject(_paq) || !util.isFunction(_paq.push)) { return; }
-	    _paq.push(["trackEvent", category, action, label, value]);
-	    console.log("PIWIK EVENT ->", "CATEGORY", category, "ACTION", action, "LABEL", label, "VALUE", value);
+	    category = kvn(category);
+	    action   = kvn(action);
+	    label    = kvn(label);
+
+	    if (!util.isValidString(category)) { return; }
+	    if (!util.isValidString(action)) { return; }
+	    if (!util.isObject(self._paq) || !util.isFunction(self._paq.push)) { return; }
+
+	    self._paq.push(["trackEvent", category, action, label, value]);
+	    console.log("SUCCESS Bighorn.track piwik", category, action, label, value);
 	  } catch (e) {
-	    console.log("error", "trackEventWithPiwik", e);
+	    console.log("ERROR Bighorn.track piwik", category, action, label, value, e.message);
 	  }
 	};
 
@@ -294,24 +306,34 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
+	var enumerable = __webpack_require__(5);
 
 	module.exports = function (category, action, label, value) {
 	  try {
-	    if (!util.isObject(ahoy) || !util.isFunction(ahoy.track)) { return; }
-	    var data = { category: category, action: action, label: label, value: value };
+	    if (!util.isObject(self.ahoy) || !util.isFunction(self.ahoy.track)) { return; }
+
+	    var data = {
+	      category: category,
+	      action: action,
+	      label: label,
+	      value: value
+	    };
+
 	    var properties = {};
-	    each(data, function (key, value) {
+
+	    enumerable.each(data, function (key, value) {
 	      if (util.isObject(value)) {
-	        merge(properties, value);
+	        enumerable.merge(properties, value);
 	      } else {
 	        properties[key] = value;
 	      }
 	    });
+
 	    var name = properties.name || label;
-	    ahoy.track(name, properties);
-	    console.log("AHOY EVENT ->", name, properties);
+	    self.ahoy.track(name, properties);
+	    console.log("SUCCESS Bighorn.track ahoy", category, action, label, value);
 	  } catch (e) {
-	    console.log("error", "trackEventWithAhoy", e);
+	    console.log("ERROR Bighorn.track ahoy", category, action, label, value);
 	  }
 	};
 

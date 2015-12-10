@@ -1,19 +1,24 @@
 {
   "name": "bighorn",
   "version": "0.0.0",
-  "description": "",
+  "description": "A standardized interface for event tracking",
   "main": "webpack.config.js",
   "dependencies": {
   },
   "devDependencies": {
     "webpack": "^1.12.9",
     "expose-loader": "^0.7.1",
-    "http-server": "^0.8.5"
+    "http-server": "^0.8.5",
+    "bower": "^1.7.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "Nathan Hopkins",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hopsoft/bighorn.git"
+  }
 }
