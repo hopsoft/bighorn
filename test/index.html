@@ -1,1 +1,10 @@
-<script type="text/javascript" src="../dist/bighorn.min.js"></script>
+<script type="text/javascript" src="../dist/bighorn.js"></script>
+<script type="text/javascript">
+
+// standard use
+//Bighorn.track("foo", "bar", "baz", 1);
+
+// use with kvn compliant objects
+Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
+
+</script>
