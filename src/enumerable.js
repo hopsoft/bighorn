@@ -55,7 +55,27 @@ function reduce (object, callback, memo) {
     return reduceWithObject(object, callback, memo);
   }
 
-  return null;
+  return object;
+}
+
+function removeNullAndUndefinedValues (object) {
+  if (util.isArray(object)) {
+    return reduceWithArray(object, function (value, memo) {
+      if (value === null || typeof(value) === "undefined") {
+        memo.push(value);
+      }
+    }, []);
+  }
+
+  if (util.isObject(object)) {
+    return reduceWithObject(object, function (key, value, memo) {
+      if (value === null || typeof(value) === "undefined") {
+        memo[key] = value;
+      }
+    }, {});
+  }
+
+  return object;
 }
 
 function merge () {
@@ -72,5 +92,6 @@ module.exports = {
   each: each,
   map: map,
   reduce: reduce,
-  merge: merge
+  merge: merge,
+  removeNullAndUndefinedValues: removeNullAndUndefinedValues
 };
