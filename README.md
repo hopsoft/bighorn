@@ -2,11 +2,43 @@
 
 A standardized interface for event tracking.
 
+## Overview
+
+A single/simple API for collecting metrics for various backends.
+Think of it as a poor man's version of [segment.io](https://segment.com/)
+
+Bighorn auto-detects supported backends by checking for their known/common variables in the global namespace.
+
 ### Supported Backends
 
 * [Google Analytics](https://developers.google.com/analytics)
 * [Piwik](https://developer.piwik.org/)
 * [Ahoy](https://github.com/ankane/ahoy)
+
+## Notable Features
+
+### KVN
+
+__KVN__ *(pronounced kevin)* means __Key Value Notation__.
+It is similar too JSON, but is much more limited in scope.
+
+It is used to attach more meaningful data into string fields.
+
+#### Rules
+
+* Data structures can only be 1 level deep
+* Only primitive types can be used for keys & values
+* Colons & semicolons are prohibited from use in keys & values
+* Keys are sorted alphabetically
+
+#### Example
+
+```javascript
+var data = { d: "example with whitespace", a: true, c: "example", b: 1 };
+
+// would be represented as
+"a:true; b:1; c:example; d:example with whitespace;"
+```
 
 ## Usage
 
@@ -25,20 +57,20 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 ```
 git clone git@github.com:hopsoft/bighorn.git
 cd bighorn
-npm install
+npm install -g webpack expose-loader http-server
 ```
 
 ### Build the `bighorn.js` scripts
 
 ```sh
-./node_modules/webpack/bin/webpack.js
-UGLIFY=true ./node_modules/webpack/bin/webpack.js
+webpack
+UGLIFY=true webpack
 ```
 
 ### Test in a browser
 
 ```sh
-./node_modules/http-server/bin/http-server
+http-server
 ```
 
 ```sh
