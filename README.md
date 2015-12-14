@@ -55,7 +55,7 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 
 ## Development
 
-### Get started
+### Setup
 
 ```
 git clone git@github.com:hopsoft/bighorn.git
@@ -63,14 +63,14 @@ cd bighorn
 npm install -g webpack expose-loader http-server
 ```
 
-### Build the `bighorn.js` scripts
+### Build
 
 ```sh
 webpack
 UGLIFY=true webpack
 ```
 
-### Test in a browser
+### Test
 
 ```sh
 http-server
