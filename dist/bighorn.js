@@ -54,12 +54,12 @@
 	// TODO: consider moving the tracking calls to a web worker
 	//       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
-	var util                = __webpack_require__(2);
-	var enumerable          = __webpack_require__(3);
-	var trackEventWithGA    = __webpack_require__(4);
-	var trackEventWithGAQ   = __webpack_require__(6);
-	var trackEventWithPiwik = __webpack_require__(7);
-	var trackEventWithAhoy  = __webpack_require__(8);
+	var util               = __webpack_require__(2);
+	var enumerable         = __webpack_require__(3);
+	var trackEventWithGA   = __webpack_require__(4);
+	var trackEventWithGAQ  = __webpack_require__(6);
+	var trackEventWithPAQ  = __webpack_require__(7);
+	var trackEventWithAhoy = __webpack_require__(8);
 
 	/*
 	 * Universal method for tracking events.
@@ -87,7 +87,7 @@
 
 	    trackEventWithGA(category, action, label, value);
 	    trackEventWithGAQ(category, action, label, value);
-	    trackEventWithPiwik(category, action, label, value);
+	    trackEventWithPAQ(category, action, label, value);
 	    trackEventWithAhoy(category, action, label, value);
 	  } catch (e) {
 	    console.log("ERROR", "Bighorn.track", e);
@@ -255,6 +255,12 @@
 	var kvn = __webpack_require__(5);
 
 	module.exports = function (category, action, label, value) {
+	  var name     = "ga";
+	  var logLabel = "Bighorn.track google ga";
+	  var tracker  = self[name];
+
+	  console.log("PRE", logLabel, tracker);
+
 	  try {
 	    category = kvn(category);
 	    action   = kvn(action);
@@ -262,12 +268,12 @@
 
 	    if (!util.isValidString(category)) { return; }
 	    if (!util.isValidString(action)) { return; }
-	    if (!util.isFunction(self.ga)) { return; }
+	    if (!util.isFunction(tracker)) { return; }
 
-	    self.ga("send", "event", category, action, label, value);
-	    console.log("SUCCESS Bighorn.track ga", category, action, label, value);
+	    tracker("send", "event", category, action, label, value);
+	    console.log("SUCCESS", logLabel, category, action, label, value);
 	  } catch (e) {
-	    console.log("ERROR Bighorn.track ga", category, action, label, value);
+	    console.log("ERROR", logLabel, category, action, label, value);
 	  }
 	};
 
@@ -324,6 +330,12 @@
 	var kvn = __webpack_require__(5);
 
 	module.exports = function (category, action, label, value) {
+	  var name     = "_gaq";
+	  var logLabel = "Bighorn.track google _gaq";
+	  var tracker  = self[name];
+
+	  console.log("PRE", logLabel, tracker);
+
 	  try {
 	    category = kvn(category);
 	    action   = kvn(action);
@@ -331,13 +343,13 @@
 
 	    if (!util.isValidString(category)) { return; }
 	    if (!util.isValidString(action)) { return; }
-	    if (!util.isObject(self._gaq) || !util.isFunction(self._gaq.push)) { return; }
+	    if (!util.isObject(tracker) || !util.isFunction(tracker.push)) { return; }
 	    if (util.isFunction(self.ga)) { return; } // let ga manage the tracking
 
-	    self._gaq.push(["trackEvent", category, action, label, value]);
-	    console.log("SUCCESS Bighorn.track gaq", category, action, label, value);
+	    tracker.push(["trackEvent", category, action, label, value]);
+	    console.log("SUCCESS", logLabel, category, action, label, value);
 	  } catch (e) {
-	    console.log("ERROR Bighorn.track gaq", category, action, label, value, e.message);
+	    console.log("ERROR", logLabel, category, action, label, value);
 	  }
 	};
 
@@ -350,6 +362,12 @@
 	var kvn = __webpack_require__(5);
 
 	module.exports = function (category, action, label, value) {
+	  var name     = "_paq";
+	  var logLabel = "Bighorn.track piwik _paq";
+	  var tracker  = self[name];
+
+	  console.log("PRE", logLabel, tracker);
+
 	  try {
 	    category = kvn(category);
 	    action   = kvn(action);
@@ -357,12 +375,12 @@
 
 	    if (!util.isValidString(category)) { return; }
 	    if (!util.isValidString(action)) { return; }
-	    if (!util.isObject(self._paq) || !util.isFunction(self._paq.push)) { return; }
+	    if (!util.isObject(tracker) || !util.isFunction(tracker.push)) { return; }
 
-	    self._paq.push(["trackEvent", category, action, label, value]);
-	    console.log("SUCCESS Bighorn.track piwik", category, action, label, value);
+	    tracker.push(["trackEvent", category, action, label, value]);
+	    console.log("SUCCESS", logLabel, category, action, label, value);
 	  } catch (e) {
-	    console.log("ERROR Bighorn.track piwik", category, action, label, value, e.message);
+	    console.log("ERROR", logLabel, category, action, label, value);
 	  }
 	};
 
@@ -375,8 +393,14 @@
 	var enumerable = __webpack_require__(3);
 
 	module.exports = function (category, action, label, value) {
+	  var name     = "ahoy";
+	  var logLabel = "Bighorn.track ahoy";
+	  var tracker  = self[name];
+
+	  console.log("PRE", logLabel, tracker);
+
 	  try {
-	    if (!util.isObject(self.ahoy) || !util.isFunction(self.ahoy.track)) { return; }
+	    if (!util.isObject(tracker) || !util.isFunction(tracker.track)) { return; }
 
 	    var data = {
 	      category: category,
@@ -395,11 +419,11 @@
 	      }
 	    });
 
-	    var name = properties.name || label;
-	    self.ahoy.track(name, properties);
-	    console.log("SUCCESS Bighorn.track ahoy", name, properties);
+	    var eventName = properties.name || label;
+	    tracker.track(eventName, properties);
+	    console.log("SUCCESS", logLabel, category, action, label, value);
 	  } catch (e) {
-	    console.log("ERROR Bighorn.track ahoy", name, properties);
+	    console.log("ERROR", logLabel, category, action, label, value);
 	  }
 	};
 

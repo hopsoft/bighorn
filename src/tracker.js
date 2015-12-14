@@ -1,12 +1,12 @@
 // TODO: consider moving the tracking calls to a web worker
 //       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
-var util                = require("./util");
-var enumerable          = require("./enumerable");
-var trackEventWithGA    = require("./trackers/google/ga");
-var trackEventWithGAQ   = require("./trackers/google/gaq");
-var trackEventWithPiwik = require("./trackers/piwik");
-var trackEventWithAhoy  = require("./trackers/ahoy");
+var util               = require("./util");
+var enumerable         = require("./enumerable");
+var trackEventWithGA   = require("./trackers/google/ga");
+var trackEventWithGAQ  = require("./trackers/google/gaq");
+var trackEventWithPAQ  = require("./trackers/piwik/paq");
+var trackEventWithAhoy = require("./trackers/ahoy");
 
 /*
  * Universal method for tracking events.
@@ -34,7 +34,7 @@ function track (category, action, label, value) {
 
     trackEventWithGA(category, action, label, value);
     trackEventWithGAQ(category, action, label, value);
-    trackEventWithPiwik(category, action, label, value);
+    trackEventWithPAQ(category, action, label, value);
     trackEventWithAhoy(category, action, label, value);
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);

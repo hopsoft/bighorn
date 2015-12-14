@@ -2,8 +2,14 @@ var util = require("../util");
 var enumerable = require("../enumerable");
 
 module.exports = function (category, action, label, value) {
+  var name     = "ahoy";
+  var logLabel = "Bighorn.track ahoy";
+  var tracker  = self[name];
+
+  console.log("PRE", logLabel, tracker);
+
   try {
-    if (!util.isObject(self.ahoy) || !util.isFunction(self.ahoy.track)) { return; }
+    if (!util.isObject(tracker) || !util.isFunction(tracker.track)) { return; }
 
     var data = {
       category: category,
@@ -22,10 +28,10 @@ module.exports = function (category, action, label, value) {
       }
     });
 
-    var name = properties.name || label;
-    self.ahoy.track(name, properties);
-    console.log("SUCCESS Bighorn.track ahoy", name, properties);
+    var eventName = properties.name || label;
+    tracker.track(eventName, properties);
+    console.log("SUCCESS", logLabel, category, action, label, value);
   } catch (e) {
-    console.log("ERROR Bighorn.track ahoy", name, properties);
+    console.log("ERROR", logLabel, category, action, label, value);
   }
 };
