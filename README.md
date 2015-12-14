@@ -43,8 +43,13 @@ var data = { d: "example with whitespace", a: true, c: "example", b: 1 };
 ```html
 <script type="text/javascript" src="/path/to/bighorn.min.js"></script>
 <script type="text/javascript">
+
+// standard use
 Bighorn.track("foo", "bar", "baz", 1);
+
+// use with kvn compliant objects
 Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
+
 </script>
 ```
 
