@@ -20,7 +20,7 @@ Bighorn auto-detects supported backends by checking for their known/common varia
 ### KVN
 
 __KVN__ *(pronounced kevin)* means __Key Value Notation__.
-It is similar too JSON, but is much more limited in scope.
+It's similar to JSON but is more limited in scope.
 
 It is used to attach more meaningful data into string fields.
 
