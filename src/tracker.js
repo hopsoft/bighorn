@@ -2,6 +2,7 @@
 //       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
 var util               = require("./util");
+var enumerable         = require("./enumerable");
 var trackEventWithGA   = require("./trackers/google/ga");
 var trackEventWithGAQ  = require("./trackers/google/gaq");
 var trackEventWithPAQ  = require("./trackers/piwik/paq");
@@ -26,6 +27,11 @@ var trackEventWithAhoy = require("./trackers/ahoy");
 function track (category, action, label, value) {
   try {
     if (!util.isNumber(value)) { value = null; }
+
+    category = enumerable.removeNullAndUndefinedValues(category);
+    action   = enumerable.removeNullAndUndefinedValues(action);
+    label    = enumerable.removeNullAndUndefinedValues(label);
+
     trackEventWithGA(category, action, label, value);
     trackEventWithGAQ(category, action, label, value);
     trackEventWithPAQ(category, action, label, value);
