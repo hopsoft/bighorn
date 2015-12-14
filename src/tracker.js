@@ -26,6 +26,11 @@ var trackEventWithAhoy  = require("./trackers/ahoy");
 function track (category, action, label, value) {
   try {
     if (!util.isNumber(value)) { value = null; }
+
+    category = util.removeNullAndUndefinedValues(category);
+    action   = util.removeNullAndUndefinedValues(action);
+    label    = util.removeNullAndUndefinedValues(label);
+
     trackEventWithGA(category, action, label, value);
     trackEventWithGAQ(category, action, label, value);
     trackEventWithPiwik(category, action, label, value);
