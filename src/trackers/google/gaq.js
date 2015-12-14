@@ -13,8 +13,8 @@ module.exports = function (category, action, label, value) {
     if (util.isFunction(self.ga)) { return; } // let ga manage the tracking
 
     self._gaq.push(["trackEvent", category, action, label, value]);
-    console.log("SUCCESS Bighorn.track piwik", category, action, label, value);
+    console.log("SUCCESS Bighorn.track gaq", category, action, label, value);
   } catch (e) {
-    console.log("ERROR Bighorn.track piwik", category, action, label, value, e.message);
+    console.log("ERROR Bighorn.track gaq", category, action, label, value, e.message);
   }
 };
