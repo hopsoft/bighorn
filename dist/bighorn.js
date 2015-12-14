@@ -54,10 +54,11 @@
 	// TODO: consider moving the tracking calls to a web worker
 	//       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
-	var util                          = __webpack_require__(2);
-	var trackEventWithGoogleAnalytics = __webpack_require__(3);
-	var trackEventWithPiwik           = __webpack_require__(6);
-	var trackEventWithAhoy            = __webpack_require__(7);
+	var util                = __webpack_require__(2);
+	var trackEventWithGA    = __webpack_require__(3);
+	var trackEventWithGAQ   = __webpack_require__(6);
+	var trackEventWithPiwik = __webpack_require__(7);
+	var trackEventWithAhoy  = __webpack_require__(8);
 
 	/*
 	 * Universal method for tracking events.
@@ -78,7 +79,8 @@
 	function track (category, action, label, value) {
 	  try {
 	    if (!util.isNumber(value)) { value = null; }
-	    trackEventWithGoogleAnalytics(category, action, label, value);
+	    trackEventWithGA(category, action, label, value);
+	    trackEventWithGAQ(category, action, label, value);
 	    trackEventWithPiwik(category, action, label, value);
 	    trackEventWithAhoy(category, action, label, value);
 	  } catch (e) {
@@ -302,6 +304,32 @@
 
 	    if (!util.isValidString(category)) { return; }
 	    if (!util.isValidString(action)) { return; }
+	    if (!util.isObject(self._gaq) || !util.isFunction(self._gaq.push)) { return; }
+	    if (util.isFunction(self.ga)) { return; } // let ga manage the tracking
+
+	    self._gaq.push(["trackEvent", category, action, label, value]);
+	    console.log("SUCCESS Bighorn.track piwik", category, action, label, value);
+	  } catch (e) {
+	    console.log("ERROR Bighorn.track piwik", category, action, label, value, e.message);
+	  }
+	};
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(2);
+	var kvn = __webpack_require__(4);
+
+	module.exports = function (category, action, label, value) {
+	  try {
+	    category = kvn(category);
+	    action   = kvn(action);
+	    label    = kvn(label);
+
+	    if (!util.isValidString(category)) { return; }
+	    if (!util.isValidString(action)) { return; }
 	    if (!util.isObject(self._paq) || !util.isFunction(self._paq.push)) { return; }
 
 	    self._paq.push(["trackEvent", category, action, label, value]);
@@ -313,7 +341,7 @@
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);

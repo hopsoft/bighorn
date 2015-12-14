@@ -1,10 +1,11 @@
 // TODO: consider moving the tracking calls to a web worker
 //       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
-var util                          = require("./util");
-var trackEventWithGoogleAnalytics = require("./trackers/google-analytics");
-var trackEventWithPiwik           = require("./trackers/piwik");
-var trackEventWithAhoy            = require("./trackers/ahoy");
+var util                = require("./util");
+var trackEventWithGA    = require("./trackers/google/ga");
+var trackEventWithGAQ   = require("./trackers/google/gaq");
+var trackEventWithPiwik = require("./trackers/piwik");
+var trackEventWithAhoy  = require("./trackers/ahoy");
 
 /*
  * Universal method for tracking events.
@@ -25,7 +26,8 @@ var trackEventWithAhoy            = require("./trackers/ahoy");
 function track (category, action, label, value) {
   try {
     if (!util.isNumber(value)) { value = null; }
-    trackEventWithGoogleAnalytics(category, action, label, value);
+    trackEventWithGA(category, action, label, value);
+    trackEventWithGAQ(category, action, label, value);
     trackEventWithPiwik(category, action, label, value);
     trackEventWithAhoy(category, action, label, value);
   } catch (e) {

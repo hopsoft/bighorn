@@ -1,5 +1,5 @@
-var util = require("../util");
-var kvn = require("../kvn");
+var util = require("../../util");
+var kvn = require("../../kvn");
 
 module.exports = function (category, action, label, value) {
   try {
