@@ -69,7 +69,7 @@ function removeNullAndUndefinedValues (object) {
 
   if (util.isObject(object)) {
     return reduceWithObject(object, function (key, value, memo) {
-      if (value === null || typeof(value) === "undefined") {
+      if (value !== null && typeof(value) !== "undefined") {
         memo[key] = value;
       }
     }, {});

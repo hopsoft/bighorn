@@ -55,7 +55,8 @@
 	//       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
 	var util                = __webpack_require__(2);
-	var trackEventWithGA    = __webpack_require__(3);
+	var enumerable          = __webpack_require__(3);
+	var trackEventWithGA    = __webpack_require__(4);
 	var trackEventWithGAQ   = __webpack_require__(6);
 	var trackEventWithPiwik = __webpack_require__(7);
 	var trackEventWithAhoy  = __webpack_require__(8);
@@ -80,9 +81,9 @@
 	  try {
 	    if (!util.isNumber(value)) { value = null; }
 
-	    category = util.removeNullAndUndefinedValues(category);
-	    action   = util.removeNullAndUndefinedValues(action);
-	    label    = util.removeNullAndUndefinedValues(label);
+	    category = enumerable.removeNullAndUndefinedValues(category);
+	    action   = enumerable.removeNullAndUndefinedValues(action);
+	    label    = enumerable.removeNullAndUndefinedValues(label);
 
 	    trackEventWithGA(category, action, label, value);
 	    trackEventWithGAQ(category, action, label, value);
@@ -145,75 +146,6 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var util = __webpack_require__(2);
-	var kvn = __webpack_require__(4);
-
-	module.exports = function (category, action, label, value) {
-	  try {
-	    category = kvn(category);
-	    action   = kvn(action);
-	    label    = kvn(label);
-
-	    if (!util.isValidString(category)) { return; }
-	    if (!util.isValidString(action)) { return; }
-	    if (!util.isFunction(self.ga)) { return; }
-
-	    self.ga("send", "event", category, action, label, value);
-	    console.log("SUCCESS Bighorn.track ga", category, action, label, value);
-	  } catch (e) {
-	    console.log("ERROR Bighorn.track ga", category, action, label, value);
-	  }
-	};
-
-
-/***/ },
-/* 4 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var util = __webpack_require__(2);
-	var enumerable = __webpack_require__(5);
-
-	var keyValueDelim = ":";
-	var pairDelim = "; ";
-	var reservedPattern = new RegExp(keyValueDelim + "|" + pairDelim, "g");
-
-	/**
-	 * Converts a value into a KVN (Key Value Notation) string value
-	 * KVN stores key/value pairs as a string... think of it as a subset of JSON
-	 *
-	 * NOTE: Keys are sorted alphabetically
-	 *
-	 * Example:
-	 *   { a: true, b: 1, c: "example", d: "example with whitespace" }
-	 *
-	 *   // produces
-	 *
-	 *   "a:true; b:1; c:example; d:example with whitespace;"
-	 *
-	 * IMPORTANT: Colons & semicolons are prohibited from use in keys and values
-	 */
-	module.exports = function (value) {
-	  if (!util.isObject(value)) {
-	    return String(value);
-	  }
-
-	  var keys = enumerable.reduce(value, function (key, _, memo) {
-	    memo.push(key);
-	  }, []).sort();
-
-	  var flattened = enumerable.map(keys, function (key) {
-	    return String(key).replace(reservedPattern, "") + keyValueDelim + String(value[key]).replace(reservedPattern, "");
-	  });
-
-	  return flattened.join(pairDelim);
-	};
-
-
-
-/***/ },
-/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
@@ -287,7 +219,7 @@
 
 	  if (util.isObject(object)) {
 	    return reduceWithObject(object, function (key, value, memo) {
-	      if (value === null || typeof(value) === "undefined") {
+	      if (value !== null && typeof(value) !== "undefined") {
 	        memo[key] = value;
 	      }
 	    }, {});
@@ -316,11 +248,80 @@
 
 
 /***/ },
+/* 4 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(2);
+	var kvn = __webpack_require__(5);
+
+	module.exports = function (category, action, label, value) {
+	  try {
+	    category = kvn(category);
+	    action   = kvn(action);
+	    label    = kvn(label);
+
+	    if (!util.isValidString(category)) { return; }
+	    if (!util.isValidString(action)) { return; }
+	    if (!util.isFunction(self.ga)) { return; }
+
+	    self.ga("send", "event", category, action, label, value);
+	    console.log("SUCCESS Bighorn.track ga", category, action, label, value);
+	  } catch (e) {
+	    console.log("ERROR Bighorn.track ga", category, action, label, value);
+	  }
+	};
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(2);
+	var enumerable = __webpack_require__(3);
+
+	var keyValueDelim = ":";
+	var pairDelim = "; ";
+	var reservedPattern = new RegExp(keyValueDelim + "|" + pairDelim, "g");
+
+	/**
+	 * Converts a value into a KVN (Key Value Notation) string value
+	 * KVN stores key/value pairs as a string... think of it as a subset of JSON
+	 *
+	 * NOTE: Keys are sorted alphabetically
+	 *
+	 * Example:
+	 *   { a: true, b: 1, c: "example", d: "example with whitespace" }
+	 *
+	 *   // produces
+	 *
+	 *   "a:true; b:1; c:example; d:example with whitespace;"
+	 *
+	 * IMPORTANT: Colons & semicolons are prohibited from use in keys and values
+	 */
+	module.exports = function (value) {
+	  if (!util.isObject(value)) {
+	    return String(value);
+	  }
+
+	  var keys = enumerable.reduce(value, function (key, _, memo) {
+	    memo.push(key);
+	  }, []).sort();
+
+	  var flattened = enumerable.map(keys, function (key) {
+	    return String(key).replace(reservedPattern, "") + keyValueDelim + String(value[key]).replace(reservedPattern, "");
+	  });
+
+	  return flattened.join(pairDelim);
+	};
+
+
+
+/***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
-	var kvn = __webpack_require__(4);
+	var kvn = __webpack_require__(5);
 
 	module.exports = function (category, action, label, value) {
 	  try {
@@ -346,7 +347,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
-	var kvn = __webpack_require__(4);
+	var kvn = __webpack_require__(5);
 
 	module.exports = function (category, action, label, value) {
 	  try {
@@ -371,7 +372,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(2);
-	var enumerable = __webpack_require__(5);
+	var enumerable = __webpack_require__(3);
 
 	module.exports = function (category, action, label, value) {
 	  try {
