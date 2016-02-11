@@ -60,13 +60,13 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 It's useful to capture as much information when a click occurs as possible.
 We typically capture the following data points.
 
-- `host` _the page hosting the link_
-- `name` _the name of the event **click**_
-- `trigger` _the DOM event that triggered the event_
-- `type` _the type of link (i.e. banner-ad, text-ad, etc...)_
-- `value` _the anticipated revenue earned_
-- `partner` _the partner (if any) the link is sending traffic to_
-- `target` _the domain the click is sending traffic to_
+- `host` - the page hosting the link
+- `name` - the name of the event **click**
+- `trigger` - the DOM event that triggered the event
+- `type` - the type of link (i.e. banner-ad, text-ad, etc...)
+- `value` - the anticipated revenue earned
+- `partner` - the partner (if any) the link is sending traffic to
+- `target` - the domain the click is sending traffic to
 
 > __Important:__ How the data points are structured will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
