@@ -59,7 +59,7 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 
 It's useful to capture as much information as possible when a click event occurs.
 For example, I typically track the following data points.
-_Feel free to add additional data points as your uses cases dictate._
+_Feel free to add additional data points as your usecase dictates._
 
 - `name`    - the name of the event (can be custom)
 - `trigger` - the DOM event that triggered the event
