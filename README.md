@@ -71,7 +71,7 @@ _Feel free to add additional data points as your uses cases dictate._
 
 > __Important:__ How the data points are structured when tracked with Bighorn will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
-Here's an example that structures an HTML link & its Bighorn tracking that is optimized for Piwik reporting.
+Here's an example that structures an HTML link & Bighorn tracking optimized for Piwik reporting.
 
 ```html
 <a id='amazon-link' href='http://www.amazon.com/dp/0596517742/?tag=YOUR_ASSOCIATES_ID'
@@ -106,7 +106,6 @@ $('#amazon-link').on('mouseup', function (event) {
 >           & anticipating that 1% of clicks result in a purchase:
 >           `20 * 0.1 * 0.01`
 >           This formula will need to be updated regularly to ensure it reflects accurate anticipated revenue.
-
 
 > __Important:__ You'll need to build custom formulas to determine click value based on your own performance data.
 
