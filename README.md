@@ -66,7 +66,7 @@ _Feel free to add additional data points as your uses cases dictate._
 - `host`    - the page hosting the link
 - `target`  - the domain the click is sending traffic to
 - `type`    - the type of link (i.e. banner-ad, text-ad, etc...)
-- `partner` - the partner (if any) the link is sending traffic to
+- `partner` - the partner the link is sending traffic to
 - `value`   - the anticipated revenue from the event
 
 > __Important:__ How the data points are structured when tracked with Bighorn will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
