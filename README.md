@@ -60,7 +60,7 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 It's useful to capture as much information when a click occurs as possible.
 We typically capture the following data points.
 
-- `name` - the name of the event **click**
+- `name` - the name of the event (can be custom)
 - `trigger` - the DOM event that triggered the event
 - `host` - the page hosting the link
 - `target` - the domain the click is sending traffic to
