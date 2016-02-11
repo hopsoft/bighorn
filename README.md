@@ -57,8 +57,8 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 
 ### Clicks
 
-It's useful to capture as much information when a click occurs as possible.
-We typically capture the following data points.
+It's useful to capture as much information as possible when a click occurs.
+For example, I typically track the following data points.
 
 - `name` - the name of the event (can be custom)
 - `trigger` - the DOM event that triggered the event
