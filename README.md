@@ -68,6 +68,8 @@ For example, I typically track the following data points.
 - `partner` - the partner (if any) the link is sending traffic to
 - `value`   - the anticipated revenue from the event
 
+_Feel free to add additional data points as your uses cases dictate._
+
 > __Important:__ How the data points are structured when tracked with Bighorn will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
 Here's an example that structures an HTML link & its Bighorn tracking that is optimized for Piwik reporting.
