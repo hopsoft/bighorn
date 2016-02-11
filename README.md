@@ -60,13 +60,13 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 It's useful to capture as much information when a click occurs as possible.
 We typically capture the following data points.
 
-- `host` - the page hosting the link
 - `name` - the name of the event **click**
 - `trigger` - the DOM event that triggered the event
-- `type` - the type of link (i.e. banner-ad, text-ad, etc...)
-- `value` - the anticipated revenue earned
-- `partner` - the partner (if any) the link is sending traffic to
+- `host` - the page hosting the link
 - `target` - the domain the click is sending traffic to
+- `type` - the type of link (i.e. banner-ad, text-ad, etc...)
+- `partner` - the partner (if any) the link is sending traffic to
+- `value` - the anticipated revenue earned
 
 > __Important:__ How the data points are structured will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
@@ -74,8 +74,8 @@ Here's an example that structures an HTML link & its Bighorn tracking optimized 
 
 ```html
 <a id='amazon-link' href='http://www.amazon.com/dp/0596517742/?tag=YOUR_ASSOCIATES_ID'
-   data-partner='Amazon'
    data-type='affiliate-link'
+   data-partner='Amazon'
    data-value='.02'>Buy JavaScript the Good Parts</a>
 ```
 
@@ -84,13 +84,13 @@ Here's an example that structures an HTML link & its Bighorn tracking optimized 
 $('#amazon-link').on('mouseup', function (event) {
   var $el = $(event.target);
   var action = {
-    host: window.location.host,
-    name: 'click',
+    name:    'click',
     trigger: event.type,
-    type: $el.data('type'),
-    value: Number($el.data('value') || 0),
+    host:    window.location.host,
+    target:  event.target.hostname,
+    type:    $el.data('type'),
     partner: $el.data('partner'),
-    target: event.target.hostname
+    value:   Number($el.data('value') || 0)
   };
   var category = { host: action.host };
   var label = { name: action.name };
