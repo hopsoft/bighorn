@@ -59,6 +59,7 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 
 It's useful to capture as much information as possible when a click event occurs.
 For example, I typically track the following data points.
+_Feel free to add additional data points as your uses cases dictate._
 
 - `name`    - the name of the event (can be custom)
 - `trigger` - the DOM event that triggered the event
@@ -67,8 +68,6 @@ For example, I typically track the following data points.
 - `type`    - the type of link (i.e. banner-ad, text-ad, etc...)
 - `partner` - the partner (if any) the link is sending traffic to
 - `value`   - the anticipated revenue from the event
-
-_Feel free to add additional data points as your uses cases dictate._
 
 > __Important:__ How the data points are structured when tracked with Bighorn will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
@@ -101,10 +100,13 @@ $('#amazon-link').on('mouseup', function (event) {
 });
 ```
 
-> __Note:__ The value was calculated with a formula.
->           A $20 price point for the book, a 10% revenue share on gross sales, & anticipating that 1% of clicks result in a purchase:
+> __Note:__ The value was calculated with a formula assuming
+>           a $20 price point for the book,
+>           a 10% revenue share on gross sales,
+>           & anticipating that 1% of clicks result in a purchase:
 >           `20 * 0.1 * 0.01`
 >           This formula will need to be updated regularly to ensure it reflects accurate anticipated revenue.
+
 
 > __Important:__ You'll need to build custom formulas to determine click value based on your own performance data.
 
