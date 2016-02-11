@@ -63,8 +63,8 @@ _Feel free to add additional data points as your uses cases dictate._
 
 - `name`    - the name of the event (can be custom)
 - `trigger` - the DOM event that triggered the event
-- `host`    - the page hosting the link
-- `target`  - the domain the click is sending traffic to
+- `host`    - the page (without querystring) hosting the link
+- `target`  - the page (without querystring) the click is sending traffic to
 - `type`    - the type of link (i.e. banner-ad, text-ad, etc...)
 - `partner` - the partner the link is sending traffic to
 - `value`   - the anticipated revenue from the event
@@ -87,8 +87,8 @@ $('#amazon-link').on('mouseup', function (event) {
   var action = {
     name:    'click',
     trigger: event.type,
-    host:    window.location.host,
-    target:  event.target.hostname,
+    host:    window.location.hostname + window.location.pathname,
+    target:  event.target.hostname + event.target.pathname,
     type:    $el.data('type'),
     partner: $el.data('partner'),
     value:   Number($el.data('value') || 0)
