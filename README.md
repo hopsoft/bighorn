@@ -71,7 +71,7 @@ _Feel free to add additional data points as your usecase dictates._
 
 > __Important:__ How the data points are structured when tracked with Bighorn will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
-Here's an example that structures an HTML link & Bighorn tracking optimized for Piwik reporting.
+Here's an example link & Bighorn tracking optimized for Piwik reporting.
 
 ```html
 <a id='amazon-link' href='http://www.amazon.com/dp/0596517742/?tag=YOUR_ASSOCIATES_ID'
