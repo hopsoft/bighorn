@@ -68,8 +68,7 @@ We typically capture the following data points.
 - `partner` _the partner (if any) the link is sending traffic to_
 - `target` _the domain the click is sending traffic to_
 
-How the data points are structured when tracking with Bighorn is also important.
-This will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
+> __Important:__ How the data points are structured will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
 
 Here's an example that structures an HTML link & its Bighorn tracking optimized for Piwik reporting.
 
