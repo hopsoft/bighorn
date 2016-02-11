@@ -53,6 +53,53 @@ Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 </script>
 ```
 
+## Tracking Events
+
+### Clicks
+
+It's useful to capture as much information when a click occurs as possible.
+We typically capture the following data points.
+
+- `host` _the page hosting the link_
+- `name` _the name of the event **click**_
+- `trigger` _the DOM event that triggered the event_
+- `type` _the type of link (i.e. banner-ad, text-ad, etc...)_
+- `value` _the anticipated revenue earned_
+- `partner` _the partner (if any) the link is sending traffic to_
+- `target` _the domain the click is sending traffic to_
+
+How the data points are structured when tracking with Bighorn is also important.
+This will impact the type of reports & visualizations available in tools like Google Analytics & Piwik.
+
+Here's an example that structures an HTML link & its Bighorn tracking optimized for Piwik reporting.
+
+```html
+<a id='amazon-link' href='http://www.amazon.com/dp/0596517742/?tag=YOUR_ASSOCIATES_ID'
+   data-partner='Amazon'
+   data-type='affiliate-link'
+   data-value='.02'>Buy JavaScript the Good Parts</a>
+```
+
+```javascript
+// example in jquery for brevity
+$('#amazon-link').on('mouseup', function (event) {
+  var $el = $(event.target);
+  var action = {
+    host: window.location.host,
+    name: 'click',
+    trigger: event.type,
+    type: $el.data('type'),
+    value: Number($el.data('value') || 0),
+    partner: $el.data('partner'),
+    target: event.target.hostname
+  };
+  var category = { host: action.host };
+  var label = { name: action.name };
+
+  Bighorn.track(category, action, label, action.value);
+});
+```
+
 ## Development
 
 ### Setup
