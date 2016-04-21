@@ -60,6 +60,7 @@
 	var trackEventWithGAQ  = __webpack_require__(6);
 	var trackEventWithPAQ  = __webpack_require__(7);
 	var trackEventWithAhoy = __webpack_require__(8);
+	var trackEventWithCustom = __webpack_require__(9)
 
 	/*
 	 * Universal method for tracking events.
@@ -89,6 +90,7 @@
 	    trackEventWithGAQ(category, action, label, value);
 	    trackEventWithPAQ(category, action, label, value);
 	    trackEventWithAhoy(category, action, label, value);
+	    trackEventWithCustom(category, action, label, value);
 	  } catch (e) {
 	    console.log("ERROR", "Bighorn.track", e);
 	  }
@@ -426,6 +428,50 @@
 	    console.log("ERROR", logLabel, category, action, label, value);
 	  }
 	};
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var util = __webpack_require__(2);
+	var enumerable = __webpack_require__(3);
+
+	module.exports = function (category, action, label, value) {
+	  var logLabel = "Bighorn.track customBackend";
+	  var backendUrl  = Bighorn.customUrl;
+
+	  console.log("PRE", logLabel, backendUrl);
+
+	  try {
+	    if (!util.isValidString(backendUrl)) { return; }
+
+	    var data = {
+	      category: category,
+	      action: action,
+	      label: label,
+	      value: value
+	    };
+
+	    var properties = {};
+
+	    enumerable.each(data, function (key, value) {
+	      if (util.isObject(value)) {
+	        enumerable.merge(properties, value);
+	      } else {
+	        properties[key] = value;
+	      }
+	    });
+
+	    var xhr = new XMLHttpRequest();
+	    xhr.open("POST", backendUrl, true);
+	    xhr.setRequestHeader("Content-type", "application/json");
+	    xhr.send(JSON.stringify(properties));
+	    console.log("SUCCESS", logLabel, category, action, label, value);
+	  } catch (e) {
+	    console.log("ERROR", logLabel, category, action, label, value);
+	  }
+	}
 
 
 /***/ }

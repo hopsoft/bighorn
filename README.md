@@ -14,6 +14,7 @@ Bighorn auto-detects supported backends by checking for their known/common varia
 * [Google Analytics](https://developers.google.com/analytics)
 * [Piwik](https://developer.piwik.org/)
 * [Ahoy](https://github.com/ankane/ahoy)
+* Custom URL
 
 ## Notable Features
 
@@ -51,6 +52,30 @@ Bighorn.track("foo", "bar", "baz", 1);
 Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
 
 </script>
+```
+
+### Custom Backend
+
+Events can be posted to a custom backend by setting a URL with:
+
+```javascript
+Bighorn.customUrl = "https://example.com/events"
+```
+
+A JSON object will be posted to the specified url.
+
+```javascript
+// standard tracking
+Bighorn.track("foo", "bar", "baz", 1)
+
+// will send this JSON object to the custom backend:
+{category: "foo", action: "bar", label: "baz", value: 1}
+
+// kvn compliant objects
+Bighorn.track({category: {name: "foo", page: "home"}}, {action: "bar"}, {label: "baz"}, 2)
+
+// get merged to a single object and posted:
+{category: {name: "foo", page: "home"}, action: "bar", label: "baz", value: 2}
 ```
 
 ## Tracking Events

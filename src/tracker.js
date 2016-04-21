@@ -7,6 +7,7 @@ var trackEventWithGA   = require("./trackers/google/ga");
 var trackEventWithGAQ  = require("./trackers/google/gaq");
 var trackEventWithPAQ  = require("./trackers/piwik/paq");
 var trackEventWithAhoy = require("./trackers/ahoy");
+var trackEventWithCustom = require("./trackers/customBackend")
 
 /*
  * Universal method for tracking events.
@@ -36,6 +37,7 @@ function track (category, action, label, value) {
     trackEventWithGAQ(category, action, label, value);
     trackEventWithPAQ(category, action, label, value);
     trackEventWithAhoy(category, action, label, value);
+    trackEventWithCustom(category, action, label, value);
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);
   }
