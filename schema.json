@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Bighorn Event",
+  "type": "object",
+  "description": "Schema that describes a Bighorn event.",
+  "required": [
+    "name",
+    "value",
+    "utm_source"
+  ],
+  "properties": {
+    "name": {
+      "description": "The name of the event",
+      "type": "string"
+    },
+    "trigger": {
+      "description": "The event trigger. For example, the DOM event.",
+      "type": "string"
+    },
+    "type": {
+      "description": "The event type. An additional qualifier to help distinguish events.",
+      "type": "string"
+    },
+    "info": {
+      "description": "Additional event information.",
+      "type": "string"
+    },
+    "host": {
+      "description": "The page or API endpoint (without querystring) where the event was triggered.",
+      "type": "string"
+    },
+    "target": {
+      "description": "The page or API endpoint (without querystring) where traffic or data is being sent.",
+      "type": "string"
+    },
+    "partner": {
+      "description": "The partner receiving traffic or data.",
+      "type": "string"
+    },
+    "value": {
+      "description": "The event value.",
+      "type": "number"
+    },
+    "utm_source": {
+      "description": "The attributable source of the event (can be different than the visit).",
+      "type": "string"
+    },
+    "utm_campaign": {
+      "description": "The attributable campaign.",
+      "type": "string"
+    },
+    "utm_medium": {
+      "description": "The attributable medium.",
+      "type": "string"
+    },
+    "utm_content": {
+      "description": "The attributable content.",
+      "type": "string"
+    },
+    "utm_term": {
+      "description": "The attributable term.",
+      "type": "string"
+    }
+  }
+}
