@@ -1,12 +1,24 @@
 // TODO: consider moving the tracking calls to a web worker
 //       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
+var tv4                = require("tv4");
+var eventSchema        = require("./eventSchema");
 var util               = require("./util");
 var enumerable         = require("./enumerable");
 var trackEventWithGA   = require("./trackers/google/ga");
 var trackEventWithGAQ  = require("./trackers/google/gaq");
 var trackEventWithPAQ  = require("./trackers/piwik/paq");
 var trackEventWithAhoy = require("./trackers/ahoy");
+
+var validate = function (eventData) {
+  var validationResult = tv4.validateMultiple(eventData, eventSchema);
+  if (!validationResult.valid) {
+    eventData.validationErrors = enumerable.map(validationResult.errors, function (e) {
+      return e.message;
+    });
+    console.log("WARNING", "Bighorn.validate", "Schema validation failed!", eventData);
+  }
+};
 
 /*
  * Universal method for tracking events.
@@ -17,15 +29,14 @@ var trackEventWithAhoy = require("./trackers/ahoy");
  *   - Piwik
  *   - Ahoy
  *
- * Method signature match's Google Analytics: https://developers.google.com/analytics/devguides/collection/analyticsjs/events
- *   - Category [String] [Required] - Typically the object that was interacted with (e.g. button)
- *   - Action   [String] [Required] - The type of interaction (e.g. click)
- *   - Label    [String]            - Useful for categorizing events (e.g. nav buttons)
- *   - Value    [Number]            - Values must be non-negative. Useful to pass counts (e.g. 4 times)
+ * eventData must adhere to the schema definition at: src/eventSchema.js
  */
 
-function track (category, action, label, value) {
+function track (eventData) {
   try {
+    validate(eventData);
+    // TODO: update backends to work with eventData
+
     if (!util.isNumber(value)) { value = null; }
 
     category = enumerable.removeNullAndUndefinedValues(category);

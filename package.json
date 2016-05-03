@@ -1,9 +1,10 @@
 {
   "name": "bighorn",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A standardized interface for event tracking",
   "main": "webpack.config.js",
   "dependencies": {
+    "tv4": "^1.2.7"
   },
   "devDependencies": {
     "webpack": "^1.12.9",
