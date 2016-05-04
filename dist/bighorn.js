@@ -1806,15 +1806,11 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"id": "https://cdn.rawgit.com/hopsoft/bighorn/tree/v1.0.0/src/event-schema.json#",
+		"id": "https://cdn.rawgit.com/hopsoft/bighorn/v1.0.0/src/event-schema.json#",
 		"$schema": "https://json-schema.org/draft-04/schema#",
 		"description": "Schema that describes a Bighorn event.",
 		"definitions": {
-			"hostWithPath": {
-				"type": "string",
-				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
-			},
-			"validationError": {
+			"validation-error": {
 				"type": "object",
 				"properties": {
 					"property": {
@@ -1856,19 +1852,12 @@
 			"host": {
 				"description": "The page or API endpoint (without scheme & querystring) where the event was triggered.",
 				"type": "string",
-				"allOf": [
-					{
-						"$ref": "#/definitions/hostWithPath"
-					}
-				]
+				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
 			},
 			"target": {
 				"description": "The page or API endpoint (without scheme & querystring) where traffic or data is being sent.",
-				"allOf": [
-					{
-						"$ref": "#/definitions/hostWithPath"
-					}
-				]
+				"type": "string",
+				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
 			},
 			"partner": {
 				"description": "The name of the partner receiving the traffic or data.",
