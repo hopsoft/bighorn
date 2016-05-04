@@ -66,8 +66,12 @@
 	var validate = function (data, schema) {
 	  var result = tv4.validateMultiple(data, schema);
 	  if (!result.valid) {
-	    data.validationErrors = enumerable.map(result.errors, function (e) {
-	      return e.message;
+	    data.validation_errors = enumerable.map(result.errors, function (e) {
+	      var error = {};
+	      error.property = e.params.key;
+	      error.property = error.property || e.dataPath.replace(/\//, "");
+	      error.message = e.message;
+	      return error;
 	    });
 	    console.log("WARNING", "Bighorn.validate", "Schema validation failed!", data);
 	  }
@@ -90,16 +94,16 @@
 	    validate(eventData, eventSchema);
 	    // TODO: update backends to work with eventData
 
-	    if (!util.isNumber(value)) { value = null; }
+	    //if (!util.isNumber(value)) { value = null; }
 
-	    category = enumerable.removeNullAndUndefinedValues(category);
-	    action   = enumerable.removeNullAndUndefinedValues(action);
-	    label    = enumerable.removeNullAndUndefinedValues(label);
+	    //category = enumerable.removeNullAndUndefinedValues(category);
+	    //action   = enumerable.removeNullAndUndefinedValues(action);
+	    //label    = enumerable.removeNullAndUndefinedValues(label);
 
-	    trackEventWithGA(category, action, label, value);
-	    trackEventWithGAQ(category, action, label, value);
-	    trackEventWithPAQ(category, action, label, value);
-	    trackEventWithAhoy(category, action, label, value);
+	    //trackEventWithGA(category, action, label, value);
+	    //trackEventWithGAQ(category, action, label, value);
+	    //trackEventWithPAQ(category, action, label, value);
+	    //trackEventWithAhoy(category, action, label, value);
 	  } catch (e) {
 	    console.log("ERROR", "Bighorn.track", e);
 	  }
@@ -1802,27 +1806,48 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"$schema": "http://json-schema.org/draft-04/schema#",
-		"id": "https://github.com/hopsoft/bighorn/tree/v1.0.0/src/event-schema.json#",
-		"title": "Bighorn Event",
-		"type": "object",
+		"id": "https://cdn.rawgit.com/hopsoft/bighorn/tree/v1.0.0/src/event-schema.json#",
+		"$schema": "https://json-schema.org/draft-04/schema#",
 		"description": "Schema that describes a Bighorn event.",
-		"required": [
-			"name",
-			"utm_source"
-		],
+		"definitions": {
+			"hostWithPath": {
+				"type": "string",
+				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+			},
+			"validationError": {
+				"type": "object",
+				"properties": {
+					"property": {
+						"type": "string",
+						"description": "The name of the property with an error"
+					},
+					"message": {
+						"type": "string",
+						"description": "The error message"
+					}
+				},
+				"required": [
+					"property",
+					"message"
+				]
+			}
+		},
+		"type": "object",
 		"properties": {
 			"name": {
 				"description": "The name of the event",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"trigger": {
 				"description": "The event trigger. For example, the DOM event.",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"type": {
 				"description": "The event type (an additional qualifier to help distinguish events).",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"info": {
 				"description": "Additional event information (placeholder for custom event data).",
@@ -1830,45 +1855,61 @@
 			},
 			"host": {
 				"description": "The page or API endpoint (without scheme & querystring) where the event was triggered.",
-				"type": "string"
+				"type": "string",
+				"allOf": [
+					{
+						"$ref": "#/definitions/hostWithPath"
+					}
+				]
 			},
 			"target": {
 				"description": "The page or API endpoint (without scheme & querystring) where traffic or data is being sent.",
-				"type": "string"
+				"allOf": [
+					{
+						"$ref": "#/definitions/hostWithPath"
+					}
+				]
 			},
 			"partner": {
 				"description": "The name of the partner receiving the traffic or data.",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"value": {
 				"description": "The event value.",
-				"type": "number"
+				"type": "number",
+				"minimum": 0
 			},
 			"utm_source": {
 				"description": "The attributable source of the event (may be different than the current visit).",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"utm_campaign": {
 				"description": "The attributable campaign (may be different than the current visit).",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"utm_medium": {
 				"description": "The attributable medium (may be different than the current visit).",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"utm_content": {
 				"description": "The attributable content (may be different than the current visit).",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
 			"utm_term": {
 				"description": "The attributable term (may be different than the current visit).",
-				"type": "string"
+				"type": "string",
+				"maxLength": 50
 			},
-			"validationErrors": {
-				"description": "Validation errors if any.",
+			"validation_errors": {
+				"description": "Validation errors.",
 				"type": "array",
 				"items": {
-					"type": "string"
+					"$ref": "#/definitions/validation-error"
 				}
 			}
 		}

@@ -13,8 +13,12 @@ var trackEventWithAhoy = require("./trackers/ahoy");
 var validate = function (data, schema) {
   var result = tv4.validateMultiple(data, schema);
   if (!result.valid) {
-    data.validationErrors = enumerable.map(result.errors, function (e) {
-      return e.message;
+    data.validation_errors = enumerable.map(result.errors, function (e) {
+      var error = {};
+      error.property = e.params.key;
+      error.property = error.property || e.dataPath.replace(/\//, "");
+      error.message = e.message;
+      return error;
     });
     console.log("WARNING", "Bighorn.validate", "Schema validation failed!", data);
   }
@@ -37,16 +41,16 @@ function track (eventData) {
     validate(eventData, eventSchema);
     // TODO: update backends to work with eventData
 
-    if (!util.isNumber(value)) { value = null; }
+    //if (!util.isNumber(value)) { value = null; }
 
-    category = enumerable.removeNullAndUndefinedValues(category);
-    action   = enumerable.removeNullAndUndefinedValues(action);
-    label    = enumerable.removeNullAndUndefinedValues(label);
+    //category = enumerable.removeNullAndUndefinedValues(category);
+    //action   = enumerable.removeNullAndUndefinedValues(action);
+    //label    = enumerable.removeNullAndUndefinedValues(label);
 
-    trackEventWithGA(category, action, label, value);
-    trackEventWithGAQ(category, action, label, value);
-    trackEventWithPAQ(category, action, label, value);
-    trackEventWithAhoy(category, action, label, value);
+    //trackEventWithGA(category, action, label, value);
+    //trackEventWithGAQ(category, action, label, value);
+    //trackEventWithPAQ(category, action, label, value);
+    //trackEventWithAhoy(category, action, label, value);
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);
   }
