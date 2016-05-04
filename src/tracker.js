@@ -38,19 +38,13 @@ var validate = function (data, schema) {
 
 function track (eventData) {
   try {
+    eventData = enumerable.removeNullAndUndefinedValues(eventData);
     validate(eventData, eventSchema);
-    // TODO: update backends to work with eventData
-
-    //if (!util.isNumber(value)) { value = null; }
-
-    //category = enumerable.removeNullAndUndefinedValues(category);
-    //action   = enumerable.removeNullAndUndefinedValues(action);
-    //label    = enumerable.removeNullAndUndefinedValues(label);
 
     //trackEventWithGA(category, action, label, value);
     //trackEventWithGAQ(category, action, label, value);
     //trackEventWithPAQ(category, action, label, value);
-    //trackEventWithAhoy(category, action, label, value);
+    trackEventWithAhoy(eventData);
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);
   }

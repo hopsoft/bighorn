@@ -91,19 +91,13 @@
 
 	function track (eventData) {
 	  try {
+	    eventData = enumerable.removeNullAndUndefinedValues(eventData);
 	    validate(eventData, eventSchema);
-	    // TODO: update backends to work with eventData
-
-	    //if (!util.isNumber(value)) { value = null; }
-
-	    //category = enumerable.removeNullAndUndefinedValues(category);
-	    //action   = enumerable.removeNullAndUndefinedValues(action);
-	    //label    = enumerable.removeNullAndUndefinedValues(label);
 
 	    //trackEventWithGA(category, action, label, value);
 	    //trackEventWithGAQ(category, action, label, value);
 	    //trackEventWithPAQ(category, action, label, value);
-	    //trackEventWithAhoy(category, action, label, value);
+	    trackEventWithAhoy(eventData);
 	  } catch (e) {
 	    console.log("ERROR", "Bighorn.track", e);
 	  }
@@ -2011,7 +2005,7 @@
 	function removeNullAndUndefinedValues (object) {
 	  if (util.isArray(object)) {
 	    return reduceWithArray(object, function (value, memo) {
-	      if (value === null || typeof(value) === "undefined") {
+	      if (value !== null || typeof(value) !== "undefined") {
 	        memo.push(value);
 	      }
 	    }, []);
@@ -2192,38 +2186,25 @@
 	var util = __webpack_require__(4);
 	var enumerable = __webpack_require__(5);
 
-	module.exports = function (category, action, label, value) {
+	module.exports = function (eventData) {
 	  var name     = "ahoy";
 	  var logLabel = "Bighorn.track ahoy";
 	  var tracker  = self[name];
-
 	  console.log("PRE", logLabel, tracker);
 
 	  try {
-	    if (!util.isObject(tracker) || !util.isFunction(tracker.track)) { return; }
+	    if (!util.isObject(tracker)) { return; }
+	    if (!util.isFunction(tracker.track)) { return; }
 
-	    var data = {
-	      category: category,
-	      action: action,
-	      label: label,
-	      value: value
-	    };
+	    if (!util.isValidString(eventData.name)) {
+	      console.log("FAIL", eventData);
+	      return;
+	    }
 
-	    var properties = {};
-
-	    enumerable.each(data, function (key, value) {
-	      if (util.isObject(value)) {
-	        enumerable.merge(properties, value);
-	      } else {
-	        properties[key] = value;
-	      }
-	    });
-
-	    var eventName = properties.name || label;
-	    tracker.track(eventName, properties);
-	    console.log("SUCCESS", logLabel, category, action, label, value);
+	    tracker.track(eventData.name, eventData);
+	    console.log("SUCCESS", eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, category, action, label, value);
+	    console.log("ERROR", eventData);
 	  }
 	};
 

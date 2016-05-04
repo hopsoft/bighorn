@@ -61,7 +61,7 @@ function reduce (object, callback, memo) {
 function removeNullAndUndefinedValues (object) {
   if (util.isArray(object)) {
     return reduceWithArray(object, function (value, memo) {
-      if (value === null || typeof(value) === "undefined") {
+      if (value !== null || typeof(value) !== "undefined") {
         memo.push(value);
       }
     }, []);
