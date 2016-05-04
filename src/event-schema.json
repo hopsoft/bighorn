@@ -1,11 +1,11 @@
-module.exports = {
+{
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://raw.githubusercontent.com/hopsoft/bighorn/tree/v1.0.0/src/event-schema.json#",
   "title": "Bighorn Event",
   "type": "object",
   "description": "Schema that describes a Bighorn event.",
   "required": [
     "name",
-    "value",
     "utm_source"
   ],
   "properties": {
@@ -69,4 +69,4 @@ module.exports = {
       }
     }
   }
-};
+}
