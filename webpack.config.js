@@ -1,8 +1,11 @@
 var webpack = require("webpack");
 var path = require("path");
+var CompressionPlugin = require("compression-webpack-plugin");
 
 var uglify = process.env.UGLIFY === "true";
-var plugins = [];
+var plugins = [
+  new CompressionPlugin()
+];
 var filename = "bighorn.js";
 
 if (uglify) {

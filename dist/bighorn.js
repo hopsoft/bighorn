@@ -96,7 +96,7 @@
 
 	    //trackEventWithGA(category, action, label, value);
 	    //trackEventWithGAQ(category, action, label, value);
-	    //trackEventWithPAQ(category, action, label, value);
+	    trackEventWithPAQ(eventData);
 	    trackEventWithAhoy(eventData);
 	  } catch (e) {
 	    console.log("ERROR", "Bighorn.track", e);
@@ -1800,12 +1800,18 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"id": "https://cdn.rawgit.com/hopsoft/bighorn/v1.0.0/src/event-schema.json#",
 		"$schema": "https://json-schema.org/draft-04/schema#",
+		"title": "Bighorn Event",
 		"description": "Schema that describes a Bighorn event.",
 		"definitions": {
+			"host-with-path": {
+				"type": "string",
+				"description": "A webpage or API endpoint (without scheme & querystring).",
+				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+			},
 			"validation-error": {
 				"type": "object",
+				"description": "A single validation error.",
 				"properties": {
 					"property": {
 						"type": "string",
@@ -1846,12 +1852,20 @@
 			"host": {
 				"description": "The page or API endpoint (without scheme & querystring) where the event was triggered.",
 				"type": "string",
-				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+				"allOf": [
+					{
+						"$ref": "#/definitions/host-with-path"
+					}
+				]
 			},
 			"target": {
 				"description": "The page or API endpoint (without scheme & querystring) where traffic or data is being sent.",
 				"type": "string",
-				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+				"allOf": [
+					{
+						"$ref": "#/definitions/host-with-path"
+					}
+				]
 			},
 			"partner": {
 				"description": "The name of the partner receiving the traffic or data.",
@@ -1895,7 +1909,15 @@
 					"$ref": "#/definitions/validation-error"
 				}
 			}
-		}
+		},
+		"required": [
+			"name",
+			"type",
+			"host",
+			"target",
+			"value",
+			"utm_source"
+		]
 	};
 
 /***/ },
@@ -2155,26 +2177,45 @@
 	var util = __webpack_require__(4);
 	var kvn = __webpack_require__(7);
 
-	module.exports = function (category, action, label, value) {
+	var formatEventData = function (eventData) {
+	  return {
+	    category: kvn({ target: eventData.target }),
+	    action: kvn(eventData),
+	    label: kvn({ name: eventData.name }),
+	    value: eventData.value
+	  };
+	};
+
+	module.exports = function (eventData) {
 	  var name     = "_paq";
 	  var logLabel = "Bighorn.track piwik _paq";
 	  var tracker  = self[name];
-
-	  console.log("PRE", logLabel, tracker);
+	  console.log("PRE", logLabel, eventData);
 
 	  try {
-	    category = kvn(category);
-	    action   = kvn(action);
-	    label    = kvn(label);
+	    var data = formatEventData(eventData);
 
-	    if (!util.isValidString(category)) { return; }
-	    if (!util.isValidString(action)) { return; }
-	    if (!util.isObject(tracker) || !util.isFunction(tracker.push)) { return; }
+	    if (!util.isObject(tracker)) {
+	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      return;
+	    }
+	    if (!util.isFunction(tracker.push)) {
+	      console.log("SKIP", logLabel, "push method not found", eventData);
+	      return;
+	    }
+	    if (!util.isValidString(data.category)) {
+	      console.log("SKIP", logLabel, "category not valid", eventData);
+	      return;
+	    }
+	    if (!util.isValidString(data.action)) {
+	      console.log("SKIP", logLabel, "action not valid", eventData);
+	      return;
+	    }
 
-	    tracker.push(["trackEvent", category, action, label, value]);
-	    console.log("SUCCESS", logLabel, category, action, label, value);
+	    tracker.push(["trackEvent", data.category, data.action, data.label, data.value]);
+	    console.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, category, action, label, value);
+	    console.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 
@@ -2184,27 +2225,31 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
-	var enumerable = __webpack_require__(5);
 
 	module.exports = function (eventData) {
 	  var name     = "ahoy";
 	  var logLabel = "Bighorn.track ahoy";
 	  var tracker  = self[name];
-	  console.log("PRE", logLabel, tracker);
+	  console.log("PRE", logLabel, eventData);
 
 	  try {
-	    if (!util.isObject(tracker)) { return; }
-	    if (!util.isFunction(tracker.track)) { return; }
-
+	    if (!util.isObject(tracker)) {
+	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      return;
+	    }
+	    if (!util.isFunction(tracker.track)) {
+	      console.log("SKIP", logLabel, "track method not found", eventData);
+	      return;
+	    }
 	    if (!util.isValidString(eventData.name)) {
-	      console.log("FAIL", eventData);
+	      console.log("SKIP", logLabel, "event name missing", eventData);
 	      return;
 	    }
 
 	    tracker.track(eventData.name, eventData);
-	    console.log("SUCCESS", eventData);
+	    console.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", eventData);
+	    console.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 

@@ -43,7 +43,7 @@ function track (eventData) {
 
     //trackEventWithGA(category, action, label, value);
     //trackEventWithGAQ(category, action, label, value);
-    //trackEventWithPAQ(category, action, label, value);
+    trackEventWithPAQ(eventData);
     trackEventWithAhoy(eventData);
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);

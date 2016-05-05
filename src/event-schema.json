@@ -1,11 +1,17 @@
 {
-  "id": "https://cdn.rawgit.com/hopsoft/bighorn/v1.0.0/src/event-schema.json#",
   "$schema": "https://json-schema.org/draft-04/schema#",
+  "title": "Bighorn Event",
   "description": "Schema that describes a Bighorn event.",
 
   "definitions": {
+    "host-with-path": {
+      "type": "string",
+      "description": "A webpage or API endpoint (without scheme & querystring).",
+      "pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+    },
     "validation-error": {
       "type": "object",
+      "description": "A single validation error.",
       "properties": {
         "property": {
            "type": "string",
@@ -47,12 +53,12 @@
     "host": {
       "description": "The page or API endpoint (without scheme & querystring) where the event was triggered.",
       "type": "string",
-      "pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+      "allOf": [{ "$ref": "#/definitions/host-with-path" }]
     },
     "target": {
       "description": "The page or API endpoint (without scheme & querystring) where traffic or data is being sent.",
       "type": "string",
-      "pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+      "allOf": [{ "$ref": "#/definitions/host-with-path" }]
     },
     "partner": {
       "description": "The name of the partner receiving the traffic or data.",
@@ -94,5 +100,13 @@
       "type": "array",
       "items": { "$ref": "#/definitions/validation-error" }
     }
-  }
+  },
+  "required": [
+    "name",
+    "type",
+    "host",
+    "target",
+    "value",
+    "utm_source"
+  ]
 }
