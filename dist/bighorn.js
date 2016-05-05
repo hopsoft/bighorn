@@ -93,9 +93,8 @@
 	  try {
 	    eventData = enumerable.removeNullAndUndefinedValues(eventData);
 	    validate(eventData, eventSchema);
-
-	    //trackEventWithGA(category, action, label, value);
-	    //trackEventWithGAQ(category, action, label, value);
+	    trackEventWithGA(eventData);
+	    trackEventWithGAQ(eventData);
 	    trackEventWithPAQ(eventData);
 	    trackEventWithAhoy(eventData);
 	  } catch (e) {
@@ -2070,26 +2069,41 @@
 	var util = __webpack_require__(4);
 	var kvn = __webpack_require__(7);
 
-	module.exports = function (category, action, label, value) {
+	var formatEventData = function (eventData) {
+	  return {
+	    category: kvn({ target: eventData.target }),
+	    action: kvn(eventData),
+	    label: kvn({ name: eventData.name }),
+	    value: eventData.value
+	  };
+	};
+
+	module.exports = function (eventData) {
 	  var name     = "ga";
 	  var logLabel = "Bighorn.track google ga";
 	  var tracker  = self[name];
-
-	  console.log("PRE", logLabel, tracker);
+	  console.log("PRE", logLabel, eventData);
 
 	  try {
-	    category = kvn(category);
-	    action   = kvn(action);
-	    label    = kvn(label);
+	    var data = formatEventData(eventData);
 
-	    if (!util.isValidString(category)) { return; }
-	    if (!util.isValidString(action)) { return; }
-	    if (!util.isFunction(tracker)) { return; }
+	    if (!util.isFunction(tracker)) {
+	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      return;
+	    }
+	    if (!util.isValidString(category)) {
+	      console.log("SKIP", logLabel, "category not valid", eventData);
+	      return;
+	    }
+	    if (!util.isValidString(action)) {
+	      console.log("SKIP", logLabel, "action not valid", eventData);
+	      return;
+	    }
 
-	    tracker("send", "event", category, action, label, value);
-	    console.log("SUCCESS", logLabel, category, action, label, value);
+	    tracker("send", "event", data.category, data.action, data.label, data.value);
+	    console.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, category, action, label, value);
+	    console.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 
@@ -2145,27 +2159,49 @@
 	var util = __webpack_require__(4);
 	var kvn = __webpack_require__(7);
 
-	module.exports = function (category, action, label, value) {
+	var formatEventData = function (eventData) {
+	  return {
+	    category: kvn({ target: eventData.target }),
+	    action: kvn(eventData),
+	    label: kvn({ name: eventData.name }),
+	    value: eventData.value
+	  };
+	};
+
+	module.exports = function (eventData) {
 	  var name     = "_gaq";
 	  var logLabel = "Bighorn.track google _gaq";
 	  var tracker  = self[name];
-
-	  console.log("PRE", logLabel, tracker);
+	  console.log("PRE", logLabel, eventData);
 
 	  try {
-	    category = kvn(category);
-	    action   = kvn(action);
-	    label    = kvn(label);
+	    var data = formatEventData(eventData);
 
-	    if (!util.isValidString(category)) { return; }
-	    if (!util.isValidString(action)) { return; }
-	    if (!util.isObject(tracker) || !util.isFunction(tracker.push)) { return; }
-	    if (util.isFunction(self.ga)) { return; } // let ga manage the tracking
+	    if (!util.isObject(tracker)) {
+	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      return;
+	    }
+	    if (!util.isFunction(tracker.push)) {
+	      console.log("SKIP", logLabel, "push method not found", eventData);
+	      return;
+	    }
+	    if (util.isFunction(self.ga)) {
+	      console.log("SKIP", logLabel, "defer tracking to ga", eventData);
+	      return;
+	    }
+	    if (!util.isValidString(category)) {
+	      console.log("SKIP", logLabel, "category not valid", eventData);
+	      return;
+	    }
+	    if (!util.isValidString(action)) {
+	      console.log("SKIP", logLabel, "action not valid", eventData);
+	      return;
+	    }
 
-	    tracker.push(["trackEvent", category, action, label, value]);
-	    console.log("SUCCESS", logLabel, category, action, label, value);
+	    tracker.push(["trackEvent", data.category, data.action, data.label, data.value]);
+	    console.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, category, action, label, value);
+	    console.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 

@@ -40,9 +40,8 @@ function track (eventData) {
   try {
     eventData = enumerable.removeNullAndUndefinedValues(eventData);
     validate(eventData, eventSchema);
-
-    //trackEventWithGA(category, action, label, value);
-    //trackEventWithGAQ(category, action, label, value);
+    trackEventWithGA(eventData);
+    trackEventWithGAQ(eventData);
     trackEventWithPAQ(eventData);
     trackEventWithAhoy(eventData);
   } catch (e) {
