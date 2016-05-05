@@ -75,9 +75,12 @@
     QUnit.test( "should track with ahoy with valid event data", function(assert) {
       self.ahoy = ahoyMock();
 
-      var result = Bighorn.track(validEventData());
+      var eventData = validEventData();
+      var result = Bighorn.track(eventData);
       assert.ok( result.trackers.ahoy, "ahoy should be true" );
       assert.ok( result.event_data.validation_errors.length === 0, "no errors should be present" );
+      assert.ok( self.ahoy.name === eventData.name );
+      assert.ok( _.isObject(self.ahoy.eventData) );
 
       delete self.ahoy;
     });
