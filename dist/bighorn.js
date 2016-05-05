@@ -59,9 +59,9 @@
 	var util               = __webpack_require__(4);
 	var enumerable         = __webpack_require__(5);
 	var trackEventWithGA   = __webpack_require__(6);
-	var trackEventWithGAQ  = __webpack_require__(8);
-	var trackEventWithPAQ  = __webpack_require__(9);
-	var trackEventWithAhoy = __webpack_require__(10);
+	var trackEventWithGAQ  = __webpack_require__(9);
+	var trackEventWithPAQ  = __webpack_require__(10);
+	var trackEventWithAhoy = __webpack_require__(11);
 
 	var validate = function (data, schema) {
 	  var result = tv4.validateMultiple(data, schema);
@@ -109,7 +109,7 @@
 	}
 
 	module.exports.validate = validate;
-	module.exports.track    = track;
+	module.exports.track = track;
 
 
 /***/ },
@@ -2068,6 +2068,7 @@
 
 	var util = __webpack_require__(4);
 	var kvn = __webpack_require__(7);
+	var logger = __webpack_require__(8);
 
 	var formatEventData = function (eventData) {
 	  return {
@@ -2082,28 +2083,27 @@
 	  var name     = "ga";
 	  var logLabel = "Bighorn.track google ga";
 	  var tracker  = self[name];
-	  console.log("PRE", logLabel, eventData);
 
 	  try {
 	    var data = formatEventData(eventData);
 
 	    if (!util.isFunction(tracker)) {
-	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      logger.log("SKIP", logLabel, "tracker not found", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(category)) {
-	      console.log("SKIP", logLabel, "category not valid", eventData);
+	      logger.log("SKIP", logLabel, "category not valid", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(action)) {
-	      console.log("SKIP", logLabel, "action not valid", eventData);
+	      logger.log("SKIP", logLabel, "action not valid", eventData);
 	      return;
 	    }
 
 	    tracker("send", "event", data.category, data.action, data.label, data.value);
-	    console.log("SUCCESS", logLabel, eventData);
+	    logger.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, e.message, eventData);
+	    logger.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 
@@ -2154,10 +2154,25 @@
 
 /***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  log: function () {
+	    var args = Array.prototype.slice.call(arguments);
+	    if ((args[0] != "SKIP") || self.Bighorn.debug) {
+	      console.log.apply(console, args);
+	    }
+	  }
+	};
+
+
+/***/ },
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
 	var kvn = __webpack_require__(7);
+	var logger = __webpack_require__(8);
 
 	var formatEventData = function (eventData) {
 	  return {
@@ -2172,46 +2187,46 @@
 	  var name     = "_gaq";
 	  var logLabel = "Bighorn.track google _gaq";
 	  var tracker  = self[name];
-	  console.log("PRE", logLabel, eventData);
 
 	  try {
 	    var data = formatEventData(eventData);
 
 	    if (!util.isObject(tracker)) {
-	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      logger.log("SKIP", logLabel, "tracker not found", eventData);
 	      return;
 	    }
 	    if (!util.isFunction(tracker.push)) {
-	      console.log("SKIP", logLabel, "push method not found", eventData);
+	      logger.log("SKIP", logLabel, "push method not found", eventData);
 	      return;
 	    }
 	    if (util.isFunction(self.ga)) {
-	      console.log("SKIP", logLabel, "defer tracking to ga", eventData);
+	      logger.log("SKIP", logLabel, "defer tracking to ga", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(category)) {
-	      console.log("SKIP", logLabel, "category not valid", eventData);
+	      logger.log("SKIP", logLabel, "category not valid", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(action)) {
-	      console.log("SKIP", logLabel, "action not valid", eventData);
+	      logger.log("SKIP", logLabel, "action not valid", eventData);
 	      return;
 	    }
 
 	    tracker.push(["trackEvent", data.category, data.action, data.label, data.value]);
-	    console.log("SUCCESS", logLabel, eventData);
+	    logger.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, e.message, eventData);
+	    logger.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
 	var kvn = __webpack_require__(7);
+	var logger = __webpack_require__(8);
 
 	var formatEventData = function (eventData) {
 	  return {
@@ -2226,66 +2241,67 @@
 	  var name     = "_paq";
 	  var logLabel = "Bighorn.track piwik _paq";
 	  var tracker  = self[name];
-	  console.log("PRE", logLabel, eventData);
 
 	  try {
 	    var data = formatEventData(eventData);
 
 	    if (!util.isObject(tracker)) {
-	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      logger.log("SKIP", logLabel, "tracker not found", eventData);
 	      return;
 	    }
 	    if (!util.isFunction(tracker.push)) {
-	      console.log("SKIP", logLabel, "push method not found", eventData);
+	      logger.log("SKIP", logLabel, "push method not found", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(data.category)) {
-	      console.log("SKIP", logLabel, "category not valid", eventData);
+	      logger.log("SKIP", logLabel, "category not valid", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(data.action)) {
-	      console.log("SKIP", logLabel, "action not valid", eventData);
+	      logger.log("SKIP", logLabel, "action not valid", eventData);
 	      return;
 	    }
 
 	    tracker.push(["trackEvent", data.category, data.action, data.label, data.value]);
-	    console.log("SUCCESS", logLabel, eventData);
+	    logger.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, e.message, eventData);
+	    logger.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
+	var logger = __webpack_require__(8);
 
 	module.exports = function (eventData) {
 	  var name     = "ahoy";
 	  var logLabel = "Bighorn.track ahoy";
 	  var tracker  = self[name];
-	  console.log("PRE", logLabel, eventData);
 
 	  try {
 	    if (!util.isObject(tracker)) {
-	      console.log("SKIP", logLabel, "tracker not found", eventData);
+	      if (self.Bighorn.debug) {
+	        logger.log("SKIP", logLabel, "tracker not found", eventData);
+	      }
 	      return;
 	    }
 	    if (!util.isFunction(tracker.track)) {
-	      console.log("SKIP", logLabel, "track method not found", eventData);
+	      logger.log("SKIP", logLabel, "track method not found", eventData);
 	      return;
 	    }
 	    if (!util.isValidString(eventData.name)) {
-	      console.log("SKIP", logLabel, "event name missing", eventData);
+	      logger.log("SKIP", logLabel, "event name missing", eventData);
 	      return;
 	    }
 
 	    tracker.track(eventData.name, eventData);
-	    console.log("SUCCESS", logLabel, eventData);
+	    logger.log("SUCCESS", logLabel, eventData);
 	  } catch (e) {
-	    console.log("ERROR", logLabel, e.message, eventData);
+	    logger.log("ERROR", logLabel, e.message, eventData);
 	  }
 	};
 

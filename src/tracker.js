@@ -56,4 +56,4 @@ if (util.isFunction(self.define) && self.define.amd) {
 }
 
 module.exports.validate = validate;
-module.exports.track    = track;
+module.exports.track = track;
