@@ -8,23 +8,23 @@ module.exports = function (eventData) {
 
   try {
     if (!util.isObject(tracker)) {
-      if (self.Bighorn.debug) {
-        logger.log("SKIP", logLabel, "tracker not found", eventData);
-      }
-      return;
+      logger.log("SKIP", logLabel, "tracker not found", eventData);
+      return false;
     }
     if (!util.isFunction(tracker.track)) {
       logger.log("SKIP", logLabel, "track method not found", eventData);
-      return;
+      return false;
     }
     if (!util.isValidString(eventData.name)) {
       logger.log("SKIP", logLabel, "event name missing", eventData);
-      return;
+      return false;
     }
 
     tracker.track(eventData.name, eventData);
     logger.log("SUCCESS", logLabel, eventData);
+    return true;
   } catch (e) {
     logger.log("ERROR", logLabel, e.message, eventData);
+    return false;
   }
 };

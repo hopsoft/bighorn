@@ -21,20 +21,22 @@ module.exports = function (eventData) {
 
     if (!util.isFunction(tracker)) {
       logger.log("SKIP", logLabel, "tracker not found", eventData);
-      return;
+      return false;
     }
     if (!util.isValidString(category)) {
       logger.log("SKIP", logLabel, "category not valid", eventData);
-      return;
+      return false;
     }
     if (!util.isValidString(action)) {
       logger.log("SKIP", logLabel, "action not valid", eventData);
-      return;
+      return false;
     }
 
     tracker("send", "event", data.category, data.action, data.label, data.value);
     logger.log("SUCCESS", logLabel, eventData);
+    return true;
   } catch (e) {
     logger.log("ERROR", logLabel, e.message, eventData);
+    return false;
   }
 };

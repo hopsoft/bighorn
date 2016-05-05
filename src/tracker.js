@@ -12,16 +12,17 @@ var trackEventWithAhoy = require("./trackers/ahoy");
 
 var validate = function (data, schema) {
   var result = tv4.validateMultiple(data, schema);
+  data.validation_errors = enumerable.map(result.errors, function (e) {
+    var error = {};
+    error.property = e.params.key;
+    error.property = error.property || e.dataPath.replace(/\//, "");
+    error.message = e.message;
+    return error;
+  });
   if (!result.valid) {
-    data.validation_errors = enumerable.map(result.errors, function (e) {
-      var error = {};
-      error.property = e.params.key;
-      error.property = error.property || e.dataPath.replace(/\//, "");
-      error.message = e.message;
-      return error;
-    });
     console.log("WARNING", "Bighorn.validate", "Schema validation failed!", data);
   }
+  return result.valid;
 };
 
 /*
@@ -35,25 +36,33 @@ var validate = function (data, schema) {
  *
  * eventData must adhere to the schema definition at: src/eventSchema.js
  */
-
 function track (eventData) {
+  eventData = eventData || {};
   try {
     eventData = enumerable.removeNullAndUndefinedValues(eventData);
+
     validate(eventData, eventSchema);
-    trackEventWithGA(eventData);
-    trackEventWithGAQ(eventData);
-    trackEventWithPAQ(eventData);
-    trackEventWithAhoy(eventData);
+    var result = {
+      event_data: eventData,
+      trackers: {
+        ga: trackEventWithGA(eventData),
+        gaq: trackEventWithGAQ(eventData),
+        paq: trackEventWithPAQ(eventData),
+        ahoy: trackEventWithAhoy(eventData),
+      }
+    };
+    console.log("OK", "Bighorn.track", result);
+    return result;
   } catch (e) {
     console.log("ERROR", "Bighorn.track", e);
   }
 }
 
-if (util.isFunction(self.define) && self.define.amd) {
-  self.define("bighorn", [], function() {
-    return { track: track };
-  });
-}
+//if (util.isFunction(self.define) && self.define.amd) {
+//  self.define("bighorn", [], function() {
+//    return { track: track };
+//  });
+//}
 
 module.exports.validate = validate;
 module.exports.track = track;

@@ -116,7 +116,7 @@ $('#amazon-link').on('mouseup', function (event) {
 ```
 git clone git@github.com:hopsoft/bighorn.git
 cd bighorn
-npm install -g webpack expose-loader http-server
+npm install
 ```
 
 ### Build
@@ -135,10 +135,3 @@ http-server
 ```sh
 open http://localhost:8080/test
 ```
-
-```javascript
-// in the browser console
-Bighorn.track("foo", "bar", "baz", 1);
-Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
-```
-

@@ -1,10 +1,87 @@
-<script type="text/javascript" src="../dist/bighorn.js"></script>
-<script type="text/javascript">
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>QUnit basic example</title>
+  <link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-1.23.1.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="https://code.jquery.com/qunit/qunit-1.23.1.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.11.2/lodash.min.js"></script>
+  <script type="text/javascript" src="../dist/bighorn.js"></script>
+  <script>
+    Bighorn.debug = true;
 
-// standard use
-//Bighorn.track("foo", "bar", "baz", 1);
+    function ahoyMock() {
+      var Mock = function () {
+        this.track = function(name, eventData) {
+          this.name = name;
+          this.eventData = eventData;
+        };
+      };
+      return new Mock();
+    }
 
-// use with kvn compliant objects
-Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
+    function validEventData() {
+      return {
+        name: "example-event",
+        type: "test",
+        host: self.location.hostname + self.location.pathname,
+        target: self.location.hostname + self.location.pathname,
+        value: 0,
+        utm_source: "bighorn-test-suite"
+      }
+    }
 
-</script>
+    QUnit.test( "should return a valid result when tracking with no args", function(assert) {
+      var result = Bighorn.track();
+      assert.ok( result, "result should be an object" );
+      assert.ok( result.trackers, "result.trackers should be an object" );
+      assert.ok( result.trackers.ga === false, "ga should be false" );
+      assert.ok( result.trackers.gaq === false, "ga should be false" );
+      assert.ok( result.trackers.paq === false, "ga should be false" );
+      assert.ok( result.trackers.ahoy === false, "ga should be false" );
+    });
+
+    QUnit.test( "should return a valid result when tracking with empty event data", function(assert) {
+      var result = Bighorn.track({});
+      assert.ok( result, "result should be an object" );
+      assert.ok( result.trackers, "result.trackers should be an object" );
+      assert.ok( result.trackers.ga === false, "ga should be false" );
+      assert.ok( result.trackers.gaq === false, "ga should be false" );
+      assert.ok( result.trackers.paq === false, "ga should be false" );
+      assert.ok( result.trackers.ahoy === false, "ga should be false" );
+    });
+
+    QUnit.test( "should attach validation errors when tracking with empty event data", function(assert) {
+      var result = Bighorn.track({});
+      assert.ok( result.event_data.validation_errors, "validation errors should be present" );
+      assert.ok( result.event_data.validation_errors.length === 6, "6 validation errors should be present" );
+    });
+
+    QUnit.test( "should track with ahoy with partial event data", function(assert) {
+      self.ahoy = ahoyMock();
+
+      var event = { name: "test" };
+      var result = Bighorn.track(event);
+      assert.ok( result.trackers.ahoy, "ahoy should be true even though validation errors are present" );
+      assert.ok( result.event_data.validation_errors.length === 5, "5 validation errors should be present" );
+
+      delete self.ahoy;
+    });
+
+    QUnit.test( "should track with ahoy with valid event data", function(assert) {
+      self.ahoy = ahoyMock();
+
+      var result = Bighorn.track(validEventData());
+      assert.ok( result.trackers.ahoy, "ahoy should be true" );
+      assert.ok( result.event_data.validation_errors.length === 0, "no errors should be present" );
+
+      delete self.ahoy;
+    });
+
+  </script>
+</body>
+</html>
