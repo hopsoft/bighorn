@@ -3,6 +3,8 @@ var kvn = require("../../kvn");
 var logger = require("../../logger");
 
 var formatEventData = function (eventData) {
+  eventData = JSON.parse(JSON.stringify(eventData));
+  delete eventData.validation_errors;
   return {
     category: kvn({ target: eventData.target }),
     action: kvn(eventData),
