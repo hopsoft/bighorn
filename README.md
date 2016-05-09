@@ -15,7 +15,7 @@ Bighorn auto-detects supported backends by checking for their known/common varia
 * [Piwik](https://developer.piwik.org/)
 * [Ahoy](https://github.com/ankane/ahoy)
 
-When emitting events to Google Analytics and Piwik, event data is converted to [KVN](https://github.com/hopsoft/kvn) format. This allows underlying data structure to be serialized, transmitted, and persisted in a way that is cross-platform and language agnostic. For more information, see the [KVN repository](https://github.com/hopsoft/kvn).
+When emitting events to Google Analytics and Piwik, event data is converted to [KVN](https://github.com/hopsoft/kvn) format. This allows the underlying data structure to be serialized, transmitted, and persisted in a way that is cross-platform and language agnostic. For more information, see the [KVN repository](https://github.com/hopsoft/kvn).
 
 ## Usage
 
@@ -24,12 +24,12 @@ When emitting events to Google Analytics and Piwik, event data is converted to [
 <script type="text/javascript">
 
 Bighorn.track({
-name:       "click",
-type:       "affiliate-link",
-host:       "my-site.com",
-target:     "great-offer.com",
-value:      7.50,
-utm_source: "affiliate_partner"
+  name:       "click",
+  type:       "affiliate-link",
+  host:       "my-site.com",
+  target:     "great-offer.com",
+  value:      7.50,
+  utm_source: "affiliate_partner"
 });
 
 </script>
@@ -90,7 +90,7 @@ $('#amazon-link').on('mouseup', function (event) {
 > __Important:__ You'll need to build custom formulas to determine click value based on your own performance data.
 
 ## Development
-To build Bighorn, you will need [webpack](https://github.com/webpack/webpack). To run tests, you will need an HTTP server like [http-server](https://github.com/indexzero/http-server)
+To build Bighorn, you will need [webpack](https://github.com/webpack/webpack). To run tests, you will need an HTTP server like [http-server](https://github.com/indexzero/http-server).
 
 ### Setup
 
