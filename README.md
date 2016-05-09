@@ -15,7 +15,7 @@ Bighorn auto-detects supported backends by checking for their known/common varia
 * [Piwik](https://developer.piwik.org/)
 * [Ahoy](https://github.com/ankane/ahoy)
 
-When emitting events to Google Analytics and Piwik, event data is converted to [KVN](https://github.com/hopsoft/kvn) format. This allows underlying data structure to be serialized, transmitted, and persisted in a way that is cross-platform and language agnostic. For more information, see the [KVN repository](https://github.com/hopsoft/kvn).
+When emitting events to Google Analytics and Piwik, event data is converted to [KVN](https://github.com/hopsoft/kvn) format. This allows the underlying data structure to be serialized, transmitted, and persisted in a way that is cross-platform and language agnostic. For more information, see the [KVN repository](https://github.com/hopsoft/kvn).
 
 ## Usage
 
