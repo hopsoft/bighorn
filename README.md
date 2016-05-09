@@ -15,28 +15,7 @@ Bighorn auto-detects supported backends by checking for their known/common varia
 * [Piwik](https://developer.piwik.org/)
 * [Ahoy](https://github.com/ankane/ahoy)
 
-## Notable Features
-
-### KVN
-
-__KVN__ *(pronounced kevin)* means __Key Value Notation__.
-It's similar to JSON but is more limited in scope & can be used to store simple data structures as strings.
-
-#### Rules
-
-* Data structures can only be 1 level deep
-* Only primitive types can be used for keys & values
-* Colons & semicolons are prohibited from use in keys & values
-* Keys are sorted alphabetically
-
-#### Example
-
-```javascript
-var data = { d: "example with whitespace", a: true, c: "example", b: 1 };
-
-// would be represented as
-"a:true; b:1; c:example; d:example with whitespace;"
-```
+When emitting events to Google Analytics and Piwik, event data is converted to [KVN](https://github.com/hopsoft/kvn) format. This allows underlying data structure to be serialized, transmitted, and persisted in a way that is cross-platform and language agnostic. For more information, see the [KVN repository](https://github.com/hopsoft/kvn).
 
 ## Usage
 
@@ -44,11 +23,14 @@ var data = { d: "example with whitespace", a: true, c: "example", b: 1 };
 <script type="text/javascript" src="/path/to/bighorn.min.js"></script>
 <script type="text/javascript">
 
-// standard use
-Bighorn.track("foo", "bar", "baz", 1);
-
-// use with kvn compliant objects
-Bighorn.track({category: "foo"}, {action: "bar"}, {label: "baz"}, 2);
+Bighorn.track({
+name:       "click",
+type:       "affiliate-link",
+host:       "my-site.com",
+target:     "great-offer.com",
+value:      7.50,
+utm_source: "affiliate_partner"
+});
 
 </script>
 ```
@@ -84,7 +66,7 @@ Here's an example link & Bighorn tracking optimized for Piwik reporting.
 // example in jquery for brevity
 $('#amazon-link').on('mouseup', function (event) {
   var $el = $(event.target);
-  var action = {
+  var data = {
     name:    'click',
     trigger: event.type,
     host:    window.location.hostname + window.location.pathname,
@@ -93,10 +75,8 @@ $('#amazon-link').on('mouseup', function (event) {
     partner: $el.data('partner'),
     value:   Number($el.data('value') || 0)
   };
-  var category = { host: action.host };
-  var label = { name: action.name };
 
-  Bighorn.track(category, action, label, action.value);
+  Bighorn.track(data);
 });
 ```
 
@@ -110,6 +90,7 @@ $('#amazon-link').on('mouseup', function (event) {
 > __Important:__ You'll need to build custom formulas to determine click value based on your own performance data.
 
 ## Development
+To build Bighorn, you will need [webpack](https://github.com/webpack/webpack). To run tests, you will need an HTTP server like [http-server](https://github.com/indexzero/http-server)
 
 ### Setup
 
