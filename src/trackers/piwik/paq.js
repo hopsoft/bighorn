@@ -13,6 +13,7 @@ var formatEventData = function (eventData) {
   };
 };
 
+// http://piwik.org/docs/event-tracking/
 module.exports = function (eventData) {
   var name     = "_paq";
   var logLabel = "Bighorn.track piwik _paq";

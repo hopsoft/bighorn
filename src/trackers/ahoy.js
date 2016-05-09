@@ -1,6 +1,7 @@
 var util = require("../util");
 var logger = require("../logger");
 
+// https://github.com/ankane/ahoy#javascript
 module.exports = function (eventData) {
   var name     = "ahoy";
   var logLabel = "Bighorn.track ahoy";

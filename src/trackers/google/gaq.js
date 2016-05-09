@@ -13,6 +13,7 @@ var formatEventData = function (eventData) {
   };
 };
 
+// https://developers.google.com/analytics/devguides/collection/gajs/
 module.exports = function (eventData) {
   var name     = "_gaq";
   var logLabel = "Bighorn.track google _gaq";
@@ -33,11 +34,11 @@ module.exports = function (eventData) {
       logger.log("SKIP", logLabel, "defer tracking to ga", eventData);
       return false;
     }
-    if (!util.isValidString(category)) {
+    if (!util.isValidString(data.category)) {
       logger.log("SKIP", logLabel, "category not valid", eventData);
       return false;
     }
-    if (!util.isValidString(action)) {
+    if (!util.isValidString(data.action)) {
       logger.log("SKIP", logLabel, "action not valid", eventData);
       return false;
     }
