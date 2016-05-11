@@ -18,6 +18,9 @@
   },
   "keywords": [],
   "author": "Nathan Hopkins",
+  "contributors": {
+    "Ron Cooke"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
