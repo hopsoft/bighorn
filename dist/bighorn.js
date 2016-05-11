@@ -55,10 +55,11 @@
 	//       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
 	var tv4                = __webpack_require__(2);
-	var eventSchema        = __webpack_require__(3);
+	var kvn                = __webpack_require__(3);
+	var eventSchema        = __webpack_require__(6);
 	var util               = __webpack_require__(4);
 	var enumerable         = __webpack_require__(5);
-	var trackEventWithGA   = __webpack_require__(6);
+	var trackEventWithGA   = __webpack_require__(7);
 	var trackEventWithGAQ  = __webpack_require__(9);
 	var trackEventWithPAQ  = __webpack_require__(10);
 	var trackEventWithAhoy = __webpack_require__(11);
@@ -98,10 +99,10 @@
 	    var result = {
 	      event_data: eventData,
 	      trackers: {
-	        ga: trackEventWithGA(eventData),
-	        gaq: trackEventWithGAQ(eventData),
-	        paq: trackEventWithPAQ(eventData),
+	        _gaq: trackEventWithGAQ(eventData),
+	        _paq: trackEventWithPAQ(eventData),
 	        ahoy: trackEventWithAhoy(eventData),
+	        ga: trackEventWithGA(eventData),
 	      }
 	    };
 	    console.log("OK", "Bighorn.track", result);
@@ -111,14 +112,9 @@
 	  }
 	}
 
-	//if (util.isFunction(self.define) && self.define.amd) {
-	//  self.define("bighorn", [], function() {
-	//    return { track: track };
-	//  });
-	//}
-
+	module.exports.kvn      = kvn;
 	module.exports.validate = validate;
-	module.exports.track = track;
+	module.exports.track    = track;
 
 
 /***/ },
@@ -1805,128 +1801,47 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	module.exports = {
-		"$schema": "https://json-schema.org/draft-04/schema#",
-		"title": "Bighorn Event",
-		"description": "Schema that describes a Bighorn event.",
-		"definitions": {
-			"host-with-path": {
-				"type": "string",
-				"description": "A webpage or API endpoint (without scheme & querystring).",
-				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
-			},
-			"validation-error": {
-				"type": "object",
-				"description": "A single validation error.",
-				"properties": {
-					"property": {
-						"type": "string",
-						"description": "The name of the property with an error"
-					},
-					"message": {
-						"type": "string",
-						"description": "The error message"
-					}
-				},
-				"required": [
-					"property",
-					"message"
-				]
-			}
-		},
-		"type": "object",
-		"properties": {
-			"name": {
-				"description": "The name of the event",
-				"type": "string",
-				"maxLength": 50
-			},
-			"trigger": {
-				"description": "The event trigger. For example, the DOM event.",
-				"type": "string",
-				"maxLength": 50
-			},
-			"type": {
-				"description": "The event type (an additional qualifier to help distinguish events).",
-				"type": "string",
-				"maxLength": 50
-			},
-			"info": {
-				"description": "Additional event information (placeholder for custom event data).",
-				"type": "string"
-			},
-			"host": {
-				"description": "The page or API endpoint (without scheme & querystring) where the event was triggered.",
-				"type": "string",
-				"allOf": [
-					{
-						"$ref": "#/definitions/host-with-path"
-					}
-				]
-			},
-			"target": {
-				"description": "The page or API endpoint (without scheme & querystring) where traffic or data is being sent.",
-				"type": "string",
-				"allOf": [
-					{
-						"$ref": "#/definitions/host-with-path"
-					}
-				]
-			},
-			"partner": {
-				"description": "The name of the partner receiving the traffic or data.",
-				"type": "string",
-				"maxLength": 50
-			},
-			"value": {
-				"description": "The event value.",
-				"type": "number",
-				"minimum": 0
-			},
-			"utm_source": {
-				"description": "The attributable source of the event (may be different than the current visit).",
-				"type": "string",
-				"maxLength": 50
-			},
-			"utm_campaign": {
-				"description": "The attributable campaign (may be different than the current visit).",
-				"type": "string",
-				"maxLength": 50
-			},
-			"utm_medium": {
-				"description": "The attributable medium (may be different than the current visit).",
-				"type": "string",
-				"maxLength": 50
-			},
-			"utm_content": {
-				"description": "The attributable content (may be different than the current visit).",
-				"type": "string",
-				"maxLength": 50
-			},
-			"utm_term": {
-				"description": "The attributable term (may be different than the current visit).",
-				"type": "string",
-				"maxLength": 50
-			},
-			"validation_errors": {
-				"description": "Validation errors.",
-				"type": "array",
-				"items": {
-					"$ref": "#/definitions/validation-error"
-				}
-			}
-		},
-		"required": [
-			"name",
-			"type",
-			"host",
-			"target",
-			"value",
-			"utm_source"
-		]
+	var util = __webpack_require__(4);
+	var enumerable = __webpack_require__(5);
+
+	var keyValueDelim = ":";
+	var pairDelim = "; ";
+	var reservedPattern = new RegExp(keyValueDelim + "|" + pairDelim, "g");
+
+	/**
+	 * Converts a value into a KVN (Key Value Notation) string value
+	 * KVN stores key/value pairs as a string... think of it as a subset of JSON
+	 *
+	 * NOTE: Keys are sorted alphabetically
+	 *
+	 * Example:
+	 *   { a: true, b: 1, c: "example", d: "example with whitespace" }
+	 *
+	 *   // produces
+	 *
+	 *   "a:true; b:1; c:example; d:example with whitespace;"
+	 *
+	 * IMPORTANT: Colons & semicolons are prohibited from use in keys and values
+	 */
+	module.exports = function (value) {
+	  if (!util.isObject(value)) {
+	    return String(value);
+	  }
+
+	  var keys = enumerable.reduce(value, function (key, _, memo) {
+	    memo.push(key);
+	  }, []).sort();
+
+	  var flattened = enumerable.map(keys, function (key) {
+	    return String(key).replace(reservedPattern, "") + keyValueDelim + String(value[key]).replace(reservedPattern, "");
+	  });
+
+	  return flattened.join(pairDelim);
 	};
+
+
 
 /***/ },
 /* 4 */
@@ -2073,10 +1988,135 @@
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		"$schema": "https://json-schema.org/draft-04/schema#",
+		"title": "Bighorn Event",
+		"description": "Schema that describes a Bighorn event.",
+		"definitions": {
+			"host-with-path": {
+				"type": "string",
+				"description": "A webpage or API endpoint (without scheme & querystring).",
+				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+			},
+			"validation-error": {
+				"type": "object",
+				"description": "A single validation error.",
+				"properties": {
+					"property": {
+						"type": "string",
+						"description": "The name of the property with an error"
+					},
+					"message": {
+						"type": "string",
+						"description": "The error message"
+					}
+				},
+				"required": [
+					"property",
+					"message"
+				]
+			}
+		},
+		"type": "object",
+		"properties": {
+			"name": {
+				"description": "The name of the event",
+				"type": "string",
+				"maxLength": 50
+			},
+			"trigger": {
+				"description": "The event trigger. For example, the DOM event.",
+				"type": "string",
+				"maxLength": 50
+			},
+			"type": {
+				"description": "The event type (an additional qualifier to help distinguish events).",
+				"type": "string",
+				"maxLength": 50
+			},
+			"info": {
+				"description": "Additional event information (placeholder for custom event data).",
+				"type": "string"
+			},
+			"host": {
+				"description": "The page or API endpoint (without scheme & querystring) where the event was triggered.",
+				"type": "string",
+				"allOf": [
+					{
+						"$ref": "#/definitions/host-with-path"
+					}
+				]
+			},
+			"target": {
+				"description": "The page or API endpoint (without scheme & querystring) where traffic or data is being sent.",
+				"type": "string",
+				"allOf": [
+					{
+						"$ref": "#/definitions/host-with-path"
+					}
+				]
+			},
+			"partner": {
+				"description": "The name of the partner receiving the traffic or data.",
+				"type": "string",
+				"maxLength": 50
+			},
+			"value": {
+				"description": "The event value.",
+				"type": "number",
+				"minimum": 0
+			},
+			"utm_source": {
+				"description": "The attributable source of the event (may be different than the current visit).",
+				"type": "string",
+				"maxLength": 50
+			},
+			"utm_campaign": {
+				"description": "The attributable campaign (may be different than the current visit).",
+				"type": "string",
+				"maxLength": 50
+			},
+			"utm_medium": {
+				"description": "The attributable medium (may be different than the current visit).",
+				"type": "string",
+				"maxLength": 50
+			},
+			"utm_content": {
+				"description": "The attributable content (may be different than the current visit).",
+				"type": "string",
+				"maxLength": 50
+			},
+			"utm_term": {
+				"description": "The attributable term (may be different than the current visit).",
+				"type": "string",
+				"maxLength": 50
+			},
+			"validation_errors": {
+				"description": "Validation errors.",
+				"type": "array",
+				"items": {
+					"$ref": "#/definitions/validation-error"
+				}
+			}
+		},
+		"required": [
+			"name",
+			"type",
+			"host",
+			"target",
+			"value",
+			"utm_source"
+		]
+	};
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
-	var kvn = __webpack_require__(7);
+	var kvn = __webpack_require__(3);
 	var logger = __webpack_require__(8);
 
 	var formatEventData = function (eventData) {
@@ -2090,6 +2130,7 @@
 	  };
 	};
 
+	// https://developers.google.com/analytics/devguides/collection/analyticsjs/events
 	module.exports = function (eventData) {
 	  var name     = "ga";
 	  var logLabel = "Bighorn.track google ga";
@@ -2102,11 +2143,11 @@
 	      logger.log("SKIP", logLabel, "tracker not found", eventData);
 	      return false;
 	    }
-	    if (!util.isValidString(category)) {
+	    if (!util.isValidString(data.category)) {
 	      logger.log("SKIP", logLabel, "category not valid", eventData);
 	      return false;
 	    }
-	    if (!util.isValidString(action)) {
+	    if (!util.isValidString(data.action)) {
 	      logger.log("SKIP", logLabel, "action not valid", eventData);
 	      return false;
 	    }
@@ -2119,50 +2160,6 @@
 	    return false;
 	  }
 	};
-
-
-/***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var util = __webpack_require__(4);
-	var enumerable = __webpack_require__(5);
-
-	var keyValueDelim = ":";
-	var pairDelim = "; ";
-	var reservedPattern = new RegExp(keyValueDelim + "|" + pairDelim, "g");
-
-	/**
-	 * Converts a value into a KVN (Key Value Notation) string value
-	 * KVN stores key/value pairs as a string... think of it as a subset of JSON
-	 *
-	 * NOTE: Keys are sorted alphabetically
-	 *
-	 * Example:
-	 *   { a: true, b: 1, c: "example", d: "example with whitespace" }
-	 *
-	 *   // produces
-	 *
-	 *   "a:true; b:1; c:example; d:example with whitespace;"
-	 *
-	 * IMPORTANT: Colons & semicolons are prohibited from use in keys and values
-	 */
-	module.exports = function (value) {
-	  if (!util.isObject(value)) {
-	    return String(value);
-	  }
-
-	  var keys = enumerable.reduce(value, function (key, _, memo) {
-	    memo.push(key);
-	  }, []).sort();
-
-	  var flattened = enumerable.map(keys, function (key) {
-	    return String(key).replace(reservedPattern, "") + keyValueDelim + String(value[key]).replace(reservedPattern, "");
-	  });
-
-	  return flattened.join(pairDelim);
-	};
-
 
 
 /***/ },
@@ -2184,7 +2181,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
-	var kvn = __webpack_require__(7);
+	var kvn = __webpack_require__(3);
 	var logger = __webpack_require__(8);
 
 	var formatEventData = function (eventData) {
@@ -2198,6 +2195,7 @@
 	  };
 	};
 
+	// https://developers.google.com/analytics/devguides/collection/gajs/
 	module.exports = function (eventData) {
 	  var name     = "_gaq";
 	  var logLabel = "Bighorn.track google _gaq";
@@ -2218,11 +2216,11 @@
 	      logger.log("SKIP", logLabel, "defer tracking to ga", eventData);
 	      return false;
 	    }
-	    if (!util.isValidString(category)) {
+	    if (!util.isValidString(data.category)) {
 	      logger.log("SKIP", logLabel, "category not valid", eventData);
 	      return false;
 	    }
-	    if (!util.isValidString(action)) {
+	    if (!util.isValidString(data.action)) {
 	      logger.log("SKIP", logLabel, "action not valid", eventData);
 	      return false;
 	    }
@@ -2242,7 +2240,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var util = __webpack_require__(4);
-	var kvn = __webpack_require__(7);
+	var kvn = __webpack_require__(3);
 	var logger = __webpack_require__(8);
 
 	var formatEventData = function (eventData) {
@@ -2256,6 +2254,7 @@
 	  };
 	};
 
+	// http://piwik.org/docs/event-tracking/
 	module.exports = function (eventData) {
 	  var name     = "_paq";
 	  var logLabel = "Bighorn.track piwik _paq";
@@ -2298,6 +2297,7 @@
 	var util = __webpack_require__(4);
 	var logger = __webpack_require__(8);
 
+	// https://github.com/ankane/ahoy#javascript
 	module.exports = function (eventData) {
 	  var name     = "ahoy";
 	  var logLabel = "Bighorn.track ahoy";

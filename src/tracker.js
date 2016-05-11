@@ -2,12 +2,13 @@
 //       https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers
 
 var tv4                = require("tv4");
+var kvn                = require("./kvn");
 var eventSchema        = require("json!./event-schema.json");
 var util               = require("./util");
 var enumerable         = require("./enumerable");
 var trackEventWithGA   = require("./trackers/google/ga");
-var trackEventWithGAQ  = require("./trackers/google/gaq");
-var trackEventWithPAQ  = require("./trackers/piwik/paq");
+var trackEventWithGAQ  = require("./trackers/google/_gaq");
+var trackEventWithPAQ  = require("./trackers/piwik/_paq");
 var trackEventWithAhoy = require("./trackers/ahoy");
 
 var validate = function (data, schema) {
@@ -45,10 +46,10 @@ function track (eventData) {
     var result = {
       event_data: eventData,
       trackers: {
-        ga: trackEventWithGA(eventData),
-        gaq: trackEventWithGAQ(eventData),
-        paq: trackEventWithPAQ(eventData),
+        _gaq: trackEventWithGAQ(eventData),
+        _paq: trackEventWithPAQ(eventData),
         ahoy: trackEventWithAhoy(eventData),
+        ga: trackEventWithGA(eventData),
       }
     };
     console.log("OK", "Bighorn.track", result);
@@ -58,11 +59,6 @@ function track (eventData) {
   }
 }
 
-//if (util.isFunction(self.define) && self.define.amd) {
-//  self.define("bighorn", [], function() {
-//    return { track: track };
-//  });
-//}
-
+module.exports.kvn      = kvn;
 module.exports.validate = validate;
-module.exports.track = track;
+module.exports.track    = track;
