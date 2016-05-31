@@ -18,7 +18,7 @@ Bighorn auto-detects backends by checking for their variable names on the global
 __Note__: Bighorn formats structured data as [KVN](https://github.com/hopsoft/kvn)
 when emitting events to some backends to capture the richest dataset possible.
 
-## Usage
+## Basic Usage
 
 ```html
 <script type="text/javascript" src="/path/to/bighorn.min.js"></script>
@@ -33,6 +33,42 @@ Bighorn.track({
   utm_source: "traffic-source"
 });
 
+</script>
+```
+
+## Advanced Usage
+
+It's possible to validate with additional JSON schemas.
+
+```html
+<script type="text/javascript" src="/path/to/bighorn.min.js"></script>
+<script type="text/javascript">
+
+// schema to restrict event names
+var nameSchema = {
+  "properties": {
+    "name": {
+      "enum": [
+        "click",
+        "mouseup"
+      ]
+    }
+  }
+};
+
+var eventData = {
+  name: "click",
+  type: "affiliate-link",
+  host: "my-site.com/example",
+  target: "great-offer.com/example",
+  value: 7.50,
+  utm_source: "traffic-source"
+};
+
+Bighorn.track(data, nameSchema);
+
+// note: track accepts N-number of additional schemas to validate with
+// Bighorn.track(data, nameSchema, otherSchema, extraSchema, ...);
 </script>
 ```
 

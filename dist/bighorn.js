@@ -66,16 +66,18 @@
 
 	var validate = function (data, schema) {
 	  var result = tv4.validateMultiple(data, schema);
-	  data.validation_errors = enumerable.map(result.errors, function (e) {
+	  if (result.valid !== true) {
+	    console.log("WARNING", "Bighorn.validate", "Schema validation failed!", data);
+	  }
+	  var errors = enumerable.map(result.errors, function (e) {
 	    var error = {};
 	    error.property = e.params.key;
 	    error.property = error.property || e.dataPath.replace(/\//, "");
 	    error.message = e.message;
 	    return error;
 	  });
-	  if (!result.valid) {
-	    console.log("WARNING", "Bighorn.validate", "Schema validation failed!", data);
-	  }
+	  data.validation_errors = data.validation_errors || [];
+	  data.validation_errors = data.validation_errors.concat(errors);
 	  return result.valid;
 	};
 
@@ -90,12 +92,19 @@
 	 *
 	 * eventData must adhere to the schema definition at: src/eventSchema.js
 	 */
-	function track (eventData) {
+	function track (/*eventData, schemas*/) {
+	  var args = Array.prototype.slice.call(arguments);
+	  var eventData = args.shift();
 	  eventData = eventData || {};
+	  schemas = args;
 	  try {
 	    eventData = enumerable.removeNullAndUndefinedValues(eventData);
 
 	    validate(eventData, eventSchema);
+	    enumerable.each(schemas, function (schema) {
+	      validate(eventData, schema);
+	    });
+
 	    var result = {
 	      event_data: eventData,
 	      trackers: {

@@ -1,3 +1,5 @@
+var _ = require("lodash");
+
 Bighorn.debug = true;
 
 if (typeof global === "object") {
@@ -13,6 +15,30 @@ QUnit.module( "Bighorn", {
     delete self.ga;
   }
 });
+
+var nameSchema = {
+  "properties": {
+    "name": {
+      "enum": [
+        "foo",
+        "bar",
+        "baz"
+      ]
+    }
+  }
+};
+
+var typeSchema = {
+  "properties": {
+    "type": {
+      "enum": [
+        "foo",
+        "bar",
+        "baz"
+      ]
+    }
+  }
+};
 
 function ahoyMock() {
   var Mock = function () {
@@ -55,6 +81,19 @@ function validEventData() {
   };
 }
 
+QUnit.test( "should attach validation errors when validating multiple schemas with invalid data", function() {
+  var result = Bighorn.track(validEventData(), nameSchema, typeSchema);
+  ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
+  ok( result.event_data.validation_errors.length === 2, "2 validation errors should be present" );
+});
+
+QUnit.test( "should pass validation when validating multiple schemas with valid data", function() {
+  var data = _.merge(validEventData(), { name: "foo", type: "bar" });
+  var result = Bighorn.track(data, nameSchema, typeSchema);
+  ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
+  ok( _.isEmpty(result.event_data.validation_errors), "validation errors should be empty" );
+});
+
 QUnit.test( "should return a valid result when tracking with no args", function() {
   var result = Bighorn.track();
   ok( result, "result should be an object" );
@@ -83,7 +122,6 @@ QUnit.test( "should attach validation errors when tracking with empty event data
 
 QUnit.test( "should track with ahoy with partial event data", function() {
   self.ahoy = ahoyMock();
-
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers.ahoy, "ahoy should be true even though validation errors are present" );
@@ -92,7 +130,6 @@ QUnit.test( "should track with ahoy with partial event data", function() {
 
 QUnit.test( "should track with ahoy with valid event data", function() {
   self.ahoy = ahoyMock();
-
   var eventData = validEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers.ahoy, "ahoy should be true" );
@@ -108,7 +145,6 @@ QUnit.test( "should track with ahoy with valid event data", function() {
 
 QUnit.test( "should track with _paq with partial event data", function() {
   self._paq = aqMock();
-
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers._paq, "_paq should be true even though validation errors are present" );
@@ -117,7 +153,6 @@ QUnit.test( "should track with _paq with partial event data", function() {
 
 QUnit.test( "should track with _paq with valid event data", function() {
   self._paq = aqMock();
-
   var eventData = validEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers._paq, "_paq should be true" );
@@ -131,7 +166,6 @@ QUnit.test( "should track with _paq with valid event data", function() {
 
 QUnit.test( "should track with _gaq with partial event data", function() {
   self._gaq = aqMock();
-
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers._gaq, "_gaq should be true even though validation errors are present" );
@@ -140,7 +174,6 @@ QUnit.test( "should track with _gaq with partial event data", function() {
 
 QUnit.test( "should track with _gaq with valid event data", function() {
   self._gaq = aqMock();
-
   var eventData = validEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers._gaq, "_gaq should be true" );
@@ -154,7 +187,6 @@ QUnit.test( "should track with _gaq with valid event data", function() {
 
 QUnit.test( "should track with ga with partial event data", function() {
   self.ga = gaMock({});
-
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers.ga, "ga should be true even though validation errors are present" );
@@ -164,7 +196,6 @@ QUnit.test( "should track with ga with partial event data", function() {
 QUnit.test( "should track with ga with valid event data", function() {
   var data = {};
   self.ga = gaMock(data);
-
   var eventData = validEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers.ga, "ga should be true" );
