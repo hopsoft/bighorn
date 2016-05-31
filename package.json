@@ -8,14 +8,15 @@
   },
   "devDependencies": {
     "webpack": "1.13.0",
+    "webpack-dev-server": "1.14.1",
     "expose-loader": "0.7.1",
     "json-loader": "0.5.4",
-    "http-server": "0.9.0",
     "compression-webpack-plugin": "0.3.1",
     "qunit": "0.9.1"
   },
   "scripts": {
-    "test": "qunit --cov -c dist/bighorn.js -t test/bighorn-test.js"
+    "test": "qunit --cov -c dist/bighorn.js -t test/bighorn-test.js",
+    "start": "webpack-dev-server"
   },
   "keywords": [],
   "author": "Nathan Hopkins",

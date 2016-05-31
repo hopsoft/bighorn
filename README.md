@@ -57,6 +57,6 @@ npm test
 ```
 
 ```sh
-http-server
+npm start
 open http://localhost:8080/test
 ```
