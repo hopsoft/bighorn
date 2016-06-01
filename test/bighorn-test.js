@@ -1,4 +1,6 @@
-var _ = require("lodash");
+if (typeof module !== "undefined" && module.exports) {
+  root._ = require("lodash");
+}
 
 Bighorn.debug = true;
 
