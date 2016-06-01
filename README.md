@@ -36,6 +36,10 @@ Bighorn.track({
 </script>
 ```
 
+## Validation
+
+Details coming soon...
+
 ## Advanced Usage
 
 It's possible to validate with additional JSON schemas.
