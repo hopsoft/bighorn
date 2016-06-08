@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft-04/schema#",
   "title": "Bighorn Event",
   "description": "Schema that describes a Bighorn event.",
 
