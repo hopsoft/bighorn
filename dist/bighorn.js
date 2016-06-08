@@ -2000,14 +2000,13 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"$schema": "https://json-schema.org/draft-04/schema#",
 		"title": "Bighorn Event",
 		"description": "Schema that describes a Bighorn event.",
 		"definitions": {
 			"host-with-path": {
 				"type": "string",
 				"description": "A webpage or API endpoint (without scheme & querystring).",
-				"pattern": "^[^http(s)?:\\/\\/]([0-9a-zA-Z\\$\\-\\_\\+\\!\\*\\'\\(\\)\\,\\/]+\\.?){2,3}[^\\?\\&\\=]$"
+				"pattern": "^(?!http(s)?:\\/\\/)[\\w~\\-\\.\\/]+(?!\\?\\&\\=)$"
 			},
 			"validation-error": {
 				"type": "object",
