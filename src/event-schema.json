@@ -67,9 +67,9 @@
     "value": {
       "description": "The event value.",
       "type": "number",
-      "minimum": 0
+      "enum": [null, { "minimum": 0, "exclusiveMinimum": true }]
     },
-    "utm_source": {
+  "utm_source": {
       "description": "The attributable source of the event (may be different than the current visit).",
       "type": "string",
       "maxLength": 50
