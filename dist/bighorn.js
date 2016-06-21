@@ -2074,7 +2074,8 @@
 			"value": {
 				"description": "The event value.",
 				"type": "number",
-				"minimum": 0
+				"minimum": 0,
+				"exclusiveMinimum": true
 			},
 			"utm_source": {
 				"description": "The attributable source of the event (may be different than the current visit).",
@@ -2114,7 +2115,6 @@
 			"type",
 			"host",
 			"target",
-			"value",
 			"utm_source"
 		]
 	};

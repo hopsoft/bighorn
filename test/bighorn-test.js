@@ -72,25 +72,49 @@ function gaMock(data) {
   };
 }
 
-function validEventData() {
+function getEventData() {
+  var value = 0.25;
+  var args = Array.prototype.slice.call(arguments);
+  if (args.length > 0) {
+    value = args.shift();
+  }
+
   return {
     name: "example-event",
     type: "test",
     host: "github.com/hopsoft/bighorn",
     target: "github.com/hopsoft/bighorn",
-    value: 0.25,
+    value: value,
     utm_source: "bighorn-test-suite"
   };
 }
 
+QUnit.test( "should validate with valid event data", function() {
+  var result = Bighorn.track(getEventData());
+  ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
+  ok( result.event_data.validation_errors.length === 0, "No validation errors should be present" );
+});
+
+QUnit.test( "should validate with null value", function() {
+  var result = Bighorn.track(getEventData(null));
+  ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
+  ok( result.event_data.validation_errors.length === 0, "No validation errors should be present" );
+});
+
+QUnit.test( "should fail validation with 0 value", function() {
+  var result = Bighorn.track(getEventData(0));
+  ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
+  ok( result.event_data.validation_errors.length === 1, "1 validation errors should be present" );
+});
+
 QUnit.test( "should attach validation errors when validating multiple schemas with invalid data", function() {
-  var result = Bighorn.track(validEventData(), nameSchema, typeSchema);
+  var result = Bighorn.track(getEventData(), nameSchema, typeSchema);
   ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
   ok( result.event_data.validation_errors.length === 2, "2 validation errors should be present" );
 });
 
 QUnit.test( "should pass validation when validating multiple schemas with valid data", function() {
-  var data = _.merge(validEventData(), { name: "foo", type: "bar" });
+  var data = _.merge(getEventData(), { name: "foo", type: "bar" });
   var result = Bighorn.track(data, nameSchema, typeSchema);
   ok( _.isArray(result.event_data.validation_errors), "validation errors should be an array" );
   ok( _.isEmpty(result.event_data.validation_errors), "validation errors should be empty" );
@@ -119,7 +143,7 @@ QUnit.test( "should return a valid result when tracking with empty event data", 
 QUnit.test( "should attach validation errors when tracking with empty event data", function() {
   var result = Bighorn.track({});
   ok( result.event_data.validation_errors, "validation errors should be present" );
-  ok( result.event_data.validation_errors.length === 6, "6 validation errors should be present" );
+  ok( result.event_data.validation_errors.length === 5, "5 validation errors should be present" );
 });
 
 QUnit.test( "should track with ahoy with partial event data", function() {
@@ -127,12 +151,12 @@ QUnit.test( "should track with ahoy with partial event data", function() {
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers.ahoy, "ahoy should be true even though validation errors are present" );
-  ok( result.event_data.validation_errors.length === 5, "5 validation errors should be present" );
+  ok( result.event_data.validation_errors.length === 4, "4 validation errors should be present" );
 });
 
 QUnit.test( "should track with ahoy with valid event data", function() {
   self.ahoy = ahoyMock();
-  var eventData = validEventData();
+  var eventData = getEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers.ahoy, "ahoy should be true" );
   ok( result.event_data.validation_errors.length === 0, "no errors should be present" );
@@ -150,12 +174,12 @@ QUnit.test( "should track with _paq with partial event data", function() {
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers._paq, "_paq should be true even though validation errors are present" );
-  ok( result.event_data.validation_errors.length === 5, "5 validation errors should be present" );
+  ok( result.event_data.validation_errors.length === 4, "4 validation errors should be present" );
 });
 
 QUnit.test( "should track with _paq with valid event data", function() {
   self._paq = aqMock();
-  var eventData = validEventData();
+  var eventData = getEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers._paq, "_paq should be true" );
   ok( result.event_data.validation_errors.length === 0, "no errors should be present" );
@@ -171,12 +195,12 @@ QUnit.test( "should track with _gaq with partial event data", function() {
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers._gaq, "_gaq should be true even though validation errors are present" );
-  ok( result.event_data.validation_errors.length === 5, "5 validation errors should be present" );
+  ok( result.event_data.validation_errors.length === 4, "4 validation errors should be present" );
 });
 
 QUnit.test( "should track with _gaq with valid event data", function() {
   self._gaq = aqMock();
-  var eventData = validEventData();
+  var eventData = getEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers._gaq, "_gaq should be true" );
   ok( result.event_data.validation_errors.length === 0, "no errors should be present" );
@@ -192,13 +216,13 @@ QUnit.test( "should track with ga with partial event data", function() {
   var event = { name: "test" };
   var result = Bighorn.track(event);
   ok( result.trackers.ga, "ga should be true even though validation errors are present" );
-  ok( result.event_data.validation_errors.length === 5, "5 validation errors should be present" );
+  ok( result.event_data.validation_errors.length === 4, "4 validation errors should be present" );
 });
 
 QUnit.test( "should track with ga with valid event data", function() {
   var data = {};
   self.ga = gaMock(data);
-  var eventData = validEventData();
+  var eventData = getEventData();
   var result = Bighorn.track(eventData);
   ok( result.trackers.ga, "ga should be true" );
   ok( result.event_data.validation_errors.length === 0, "no errors should be present" );
