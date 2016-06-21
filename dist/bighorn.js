@@ -2073,9 +2073,16 @@
 			},
 			"value": {
 				"description": "The event value.",
-				"type": "number",
-				"minimum": 0,
-				"exclusiveMinimum": true
+				"anyOf": [
+					{
+						"type": "number",
+						"minimum": 0,
+						"exclusiveMinimum": true
+					},
+					{
+						"type": null
+					}
+				]
 			},
 			"utm_source": {
 				"description": "The attributable source of the event (may be different than the current visit).",
